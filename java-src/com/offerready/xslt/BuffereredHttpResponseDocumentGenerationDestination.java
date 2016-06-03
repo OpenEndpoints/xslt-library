@@ -8,6 +8,10 @@ import org.apache.commons.io.IOUtils;
 
 public class BuffereredHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
     
+    int statusCode = HttpServletResponse.SC_OK;
+    
+    public void setStatusCode(int r) { statusCode = r; }
+    
     @Override
     public void setContentDispositionToDownload(String filename) {
         if ( ! filename.matches("[\\w\\.\\-]+")) throw new RuntimeException("Filename '" + filename + "' invalid");
@@ -16,6 +20,7 @@ public class BuffereredHttpResponseDocumentGenerationDestination extends Buffere
     
     public void deliver(HttpServletResponse response) {
         try {
+            response.setStatus(statusCode);
             response.setContentType(contentType);
     
             if (filenameOrNull != null) response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
