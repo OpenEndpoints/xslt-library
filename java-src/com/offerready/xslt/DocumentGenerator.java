@@ -219,8 +219,9 @@ public class DocumentGenerator {
                     break;
        
                 default:
-                    response.setContentType(defn.contentType == null ? "text/plain" : defn.contentType);
+                    response.setContentType((defn.contentType == null ? "text/plain" : defn.contentType) + "; charset=UTF-8");                    
                     StreamResult result = new StreamResult(response.getOutputStream());
+                    xslt.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                     try (Timer t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
                     break;
             }
