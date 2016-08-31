@@ -1,6 +1,5 @@
-/java-src/com/offerready/endpoints/DeploymentParameters.properties
 /.vagrant
 /build-tmp
 /*.jar
 /*.war
-/example-application.zip
+/data
