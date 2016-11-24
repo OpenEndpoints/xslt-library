@@ -102,7 +102,7 @@ public class ExcelGenerator extends DefaultHandler {
                     CellValue excelCell;
                     if (cellValue instanceof Double) {
                         WritableCellFormat format = normalFormat;
-                        if (cell.toString().matches("\\s*[\\d,\\.]*[.,]\\d{2}\\s*")) format = twoDecimalPlaces;
+                        if (cell.string.toString().matches("\\s*[\\d,.]*[.,]\\d{2}\\s*")) format = twoDecimalPlaces;
                         if (cell.isCentered) { format = new WritableCellFormat(format); format.setAlignment(Alignment.CENTRE); }
                         excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format);
                         columnWidthChars = String.format("%.2f", ((Double) cellValue)).length();
