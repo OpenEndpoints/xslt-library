@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.hostname = "offerready-xslt-library"
-  config.vm.box = "debian/contrib-jessie64"
+  config.vm.box = "bento/debian-7.9"
   
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "500"
