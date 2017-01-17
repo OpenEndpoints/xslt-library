@@ -35,7 +35,7 @@ public class ExcelGenerator extends DefaultHandler {
     
     protected static class CellFromHtml {
         public int colspan = 1;
-        public boolean isCentered = false;
+        public boolean isCentered = false, forceText = false;
         public StringBuilder string = new StringBuilder();
     }
     
@@ -97,7 +97,7 @@ public class ExcelGenerator extends DefaultHandler {
                 List<CellFromHtml> row = matrix.get(rowIdx);
                 for (int colIdx = 0; colIdx < row.size(); ) {
                     CellFromHtml cell = row.get(colIdx);
-                    Object cellValue = parseString(cell.string.toString());
+                    Object cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
                     int columnWidthChars = 0;
                     CellValue excelCell;
                     if (cellValue instanceof Double) {
@@ -145,6 +145,7 @@ public class ExcelGenerator extends DefaultHandler {
             if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
             String style = attributes.getValue("style");
             if (style != null && style.matches(".*text-align:\\s*center.*")) currentCell.isCentered = true;
+            if ("text".equals(attributes.getValue("excel-type"))) currentCell.forceText = true;
         }
     }
   
