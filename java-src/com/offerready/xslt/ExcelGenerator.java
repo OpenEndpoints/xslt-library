@@ -17,6 +17,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import jxl.Workbook;
 import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
 import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.NumberFormat;
@@ -37,12 +39,14 @@ import com.databasesandlife.util.Timer;
 public class ExcelGenerator extends DefaultHandler {
     
     protected static class CellFormat {
-        public boolean isCentered = false, isBold = false;
-        @Override public int hashCode() { return (isBold ? 345 : 654) * (isCentered ? 2343 : 456436); }
+        public boolean isCentered = false, isBold = false, hasTopBorder = false;
+        @Override public int hashCode() { return (isBold ? 345 : 654) 
+            * (isCentered ? 2343 : 456436) * (hasTopBorder ? 3453 : 45645); }
         @Override public boolean equals(Object other) {
             if ( ! (other instanceof CellFormat)) return false;
             if (((CellFormat)other).isCentered != isCentered) return false;
             if (((CellFormat)other).isBold != isBold) return false;
+            if (((CellFormat)other).hasTopBorder != hasTopBorder) return false;
             return true;
         }
     }
@@ -114,15 +118,19 @@ public class ExcelGenerator extends DefaultHandler {
             Map<CellFormat, WritableCellFormat> result = new HashMap<>();
             for (boolean isCentered : new boolean[] { true, false }) {
                 for (boolean isBold : new boolean[] { true, false }) {
-                    CellFormat f = new CellFormat();
-                    f.isCentered = isCentered;
-                    f.isBold = isBold;
-                    
-                    WritableCellFormat format = new WritableCellFormat(base);
-                    if (isCentered) format.setAlignment(Alignment.CENTRE);
-                    if (isBold) format.setFont(bold);
-    
-                    result.put(f, format);
+                    for (boolean hasTopBorder : new boolean[] { true, false }) {
+                        CellFormat f = new CellFormat();
+                        f.isCentered = isCentered;
+                        f.isBold = isBold;
+                        f.hasTopBorder = hasTopBorder;
+                        
+                        WritableCellFormat format = new WritableCellFormat(base);
+                        if (isCentered) format.setAlignment(Alignment.CENTRE);
+                        if (isBold) format.setFont(bold);
+                        if (hasTopBorder) format.setBorder(Border.TOP, BorderLineStyle.THIN);
+        
+                        result.put(f, format);
+                    }
                 }
             }
             return result;
@@ -187,6 +195,7 @@ public class ExcelGenerator extends DefaultHandler {
             String style = attributes.getValue("style");
             if (style != null && style.matches(".*text-align:\\s*center.*")) currentCell.format.isCentered = true;
             if (style != null && style.matches(".*font-weight:\\s*bold.*")) currentCell.format.isBold = true;
+            if (style != null && style.matches(".*border-top:.*")) currentCell.format.hasTopBorder = true;
             if ("text".equals(attributes.getValue("excel-type"))) currentCell.forceText = true;
         }
     }
