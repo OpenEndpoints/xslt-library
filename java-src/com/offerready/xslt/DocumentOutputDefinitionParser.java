@@ -38,7 +38,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
         // xslt-directory is legacy, prefer xslt-file
         assertNoOtherElements(outputDefnElement, 
             "xslt-file", "xslt-directory", "placeholder-value", "convert-output-xml-to-json",
-            "convert-output-xml-fo-to-pdf", "convert-output-xml-to-excel", 
+            "convert-output-xml-fo-to-pdf", "convert-output-xsl-fo-to-pdf", "convert-output-xml-to-excel", 
             "content-type", "download-filename");
         
         final File xsltFileOrNull;
@@ -69,7 +69,8 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
         result.placeholderValues = placeholderValues;
         result.outputConversion = 
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :
-            getSubElements(outputDefnElement, "convert-output-xml-fo-to-pdf").size() > 0 ? OutputConversion.xmlFoToPdf :
+            getSubElements(outputDefnElement, "convert-output-xml-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :  // deprecated
+            getSubElements(outputDefnElement, "convert-output-xsl-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :
             getSubElements(outputDefnElement, "convert-output-xml-to-excel").size()  > 0 ? 
                 ( Boolean.parseBoolean(getOptionalAttribute(getMandatorySingleSubElement(outputDefnElement, "convert-output-xml-to-excel"), "magic-numbers")) ? 
                     OutputConversion.excelXmlToExcelBinaryMagicNumbers : OutputConversion.excelXmlToExcelBinary ) :

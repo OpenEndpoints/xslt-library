@@ -7,7 +7,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class DocumentOutputDefinition implements Serializable {
     
-    public enum OutputConversion { none, xmlToJson, xmlFoToPdf, excelXmlToExcelBinary, excelXmlToExcelBinaryMagicNumbers }; 
+    public enum OutputConversion { none, xmlToJson, xslFoToPdf, excelXmlToExcelBinary, excelXmlToExcelBinaryMagicNumbers }; 
     
     public File xsltFileOrNull;
     public Map<String, String> placeholderValues;

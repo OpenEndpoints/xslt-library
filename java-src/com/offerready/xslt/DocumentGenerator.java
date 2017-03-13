@@ -51,7 +51,7 @@ import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
  * <b>Stylevision hacks.</b> It has hacks to change the XSLT produced by StyleVision into that which can be accepted by SAXON.
  *    <p>
  * <b>Conversion after XSLT.</b> After the XSLT is applied, the resulting XML can be further processed.
- * XML-FO to PDF, convert HTML to XML, and convert XML to JSON.
+ * XSL-FO to PDF, convert HTML to XML, and convert XML to JSON.
  *    <p>
  * <b>Caching.</b> A DocumentGenerator "retains" the XSLT transformer (weakly cached by WeaklyCachedXsltTransformer).
  * Therefore, a DocumentGenerator should be added to data structures which represent "all documents which can be generated",
@@ -143,9 +143,9 @@ public class DocumentGenerator {
         catch (TransformerException e) { throw new RuntimeException(e); }
     }
 
-    protected void writePdfFromXmlFo(OutputStream pdf, Document fo) {
-        try (Timer t = new Timer("Create PDF from XML-FO")) {
-            // Get a FOP instance (can convert XML-FO into PDF)
+    protected void writePdfFromXslFo(OutputStream pdf, Document fo) {
+        try (Timer t = new Timer("Create PDF from XSL-FO")) {
+            // Get a FOP instance (can convert XSL-FO into PDF)
             FopFactory fopFactory = FopFactory.newInstance();
             if (fopBaseDirOrNull != null) fopFactory.setFontBaseURL(fopBaseDirOrNull.toURI().toString());
             if (fopConfigOrNull != null) fopFactory.setUserConfig(fopConfigOrNull);
@@ -202,11 +202,11 @@ public class DocumentGenerator {
                     outputStream.close();
                     break;
                     
-                case xmlFoToPdf:
+                case xslFoToPdf:
                     response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
-                    DOMResult xmlFo = new DOMResult();
-                    try (Timer t = new Timer("XSLT Transformation to XML-FO")) { xslt.transform(new DOMSource(xml), xmlFo); }
-                    writePdfFromXmlFo(response.getOutputStream(), (Document) xmlFo.getNode());
+                    DOMResult xslFo = new DOMResult();
+                    try (Timer t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
+                    writePdfFromXslFo(response.getOutputStream(), (Document) xslFo.getNode());
                     break;
                     
                 case excelXmlToExcelBinary:
