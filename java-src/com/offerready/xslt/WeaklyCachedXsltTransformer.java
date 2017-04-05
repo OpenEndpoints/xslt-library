@@ -21,14 +21,17 @@ import com.databasesandlife.util.Timer;
 import net.sf.saxon.TransformerFactoryImpl;
 
 /**
- * Encapsulates an "XSLT Templates" capable of performing an XSLT transformation.
+ * Wraps an XSLT {@link Templates} capable of performing an XSLT transformation.
  *    <p>
- * <strong>There is a cache of these objects</strong>, by the MD5 of the XSLT file, so that every time an object is requested
+ * Get an object by using the static method {@link #getTransformerOrScheduleCompilation(XsltCompilationThreads, String, Xslt)}
+ * This method maintains a cache by the MD5 of the XSLT file, so that every time an object is requested
  * for the same XSLT file (even if this XSLT file exists in different places in the filesystem), the same object will be returned.
- * However, clients should keep a persistent reference to this object as long as transformations might need to be applied using it;
+ *    <p>
+ * Clients should keep a persistent reference to the {@link WeaklyCachedXsltTransformer}
+ * as long as transformations might need to be applied using it;
  * the cache caches only weak references.
  *    <p>
- * <strong>Compilation of an XSLT file can fail</strong> (e.g. if the XSLT file is invalid).
+ * Compilation of an XSLT file can fail (e.g. if the XSLT file is invalid).
  * In this case, the desired behaviour is that all other valid XSLTs can be applied, so no exception is thrown upon compilation.
  * Application of an XSLT which failed to compile will throw a {@link #DocumentTemplateInvalidException}.
  * The method {@link #assertValid()} returns void if the template is OK and throws the DocumentTemplateInvalidException otherwise.

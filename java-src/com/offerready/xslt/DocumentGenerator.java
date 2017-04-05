@@ -46,16 +46,20 @@ import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
 /**
  * An object capable of generating a document for a particular XSLT file.
  *    <p>
- * This object provides does more than just execute XSLT.
+ * This object executes XSLT, and in addition:
  *    <p>
- * <b>Stylevision hacks.</b> It has hacks to change the XSLT produced by StyleVision into that which can be accepted by SAXON.
+ * <ul>
+ * <li><b>Stylevision hacks.</b> It has hacks to change the XSLT produced by StyleVision into that which can be accepted by
+ * the free version of SAXON called SAXON HE.
  *    <p>
- * <b>Conversion after XSLT.</b> After the XSLT is applied, the resulting XML can be further processed.
+ * <li><b>Conversion after XSLT.</b> After the XSLT is applied, the resulting XML can be further processed.
  * XSL-FO to PDF, convert HTML to XML, and convert XML to JSON.
+ * </ul>
  *    <p>
- * <b>Caching.</b> A DocumentGenerator "retains" the XSLT transformer (weakly cached by WeaklyCachedXsltTransformer).
- * Therefore, a DocumentGenerator should be added to data structures which represent "all documents which can be generated",
- * to avoid XSLT being re-compiled every time a document is requested. 
+ * Objects of this class reference the complied XSLT transfomer.
+ * As long as you need to access the XSLT, retain a link to this object.
+ * Creating a new object might involve the XSLT being re-complied (depending on the cache in {@link WeaklyCachedXsltTransformer}).
+ *    <p>
  * A DocumentGenerator (or "all documents which can be generated") should not be added to e.g. Wicket sessions as
  * these cannot be serialized (and would be big even if they could.)
  */
