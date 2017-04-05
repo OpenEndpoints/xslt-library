@@ -18,6 +18,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
@@ -147,7 +148,7 @@ public class DocumentGenerator {
         catch (TransformerException e) { throw new RuntimeException(e); }
     }
 
-    protected void writePdfFromXslFo(OutputStream pdf, Document fo) {
+    protected void writePdfFromXslFo(OutputStream pdf, Document fo, URIResolver uriResolverOrNull) {
         try (Timer t = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
             FopFactory fopFactory = FopFactory.newInstance();
@@ -155,6 +156,7 @@ public class DocumentGenerator {
             if (fopConfigOrNull != null) fopFactory.setUserConfig(fopConfigOrNull);
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
             if (imagesBase != null) foUserAgent.setBaseURL(imagesBase.toURI().toString());
+            if (uriResolverOrNull != null) foUserAgent.setURIResolver(uriResolverOrNull);
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
 
             // Setup JAXP using identity transformer
@@ -181,9 +183,10 @@ public class DocumentGenerator {
     /**
      * @param response  this is closed by this method 
      * @param transform if false, then don't do transformation, but output XML instead (for debugging)
+     * @param uriResolverOrNull if not null, pass an object which can, for example, fetch or create images via programmatic logic
      * @throws DocumentTemplateInvalidException in case the XSLT template wasn't valid
      */
-    public void transform(DocumentGenerationDestination response, Document xml, boolean transform)
+    public void transform(DocumentGenerationDestination response, Document xml, boolean transform, URIResolver uriResolverOrNull)
     throws DocumentTemplateInvalidException {
         try {
             if (transform == false) {
@@ -210,7 +213,7 @@ public class DocumentGenerator {
                     response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
                     DOMResult xslFo = new DOMResult();
                     try (Timer t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
-                    writePdfFromXslFo(response.getOutputStream(), (Document) xslFo.getNode());
+                    writePdfFromXslFo(response.getOutputStream(), (Document) xslFo.getNode(), uriResolverOrNull);
                     break;
                     
                 case excelXmlToExcelBinary:
