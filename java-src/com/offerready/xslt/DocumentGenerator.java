@@ -158,7 +158,7 @@ public class DocumentGenerator {
             if (imagesBase != null) foUserAgent.setBaseURL(imagesBase.toURI().toString());
             if (uriResolverOrNull != null) foUserAgent.setURIResolver(uriResolverOrNull);
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
-
+            
             // Setup JAXP using identity transformer
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer(); // identity transformer
