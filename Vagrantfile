@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.hostname = "offerready-xslt-library"
-  config.vm.box = "bento/debian-7.9"
+  config.vm.box = "debian/contrib-jessie64"
   
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "500"
@@ -15,18 +15,14 @@ Vagrant.configure(2) do |config|
     set -e  # stop on error
 
     echo --- General OS installation
+    echo "deb http://ftp.de.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/backports.list
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y    # grub upgrade warnings mess with the terminal
-    apt-get -q -y install vim ant subversion ntp unattended-upgrades 
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -qy    # grub upgrade warnings mess with the terminal
+    apt-get -qy install vim ant subversion ntp unattended-upgrades less
 
-    echo --- Install Java 8
-    echo 'Acquire::http::Proxy { download.oracle.com DIRECT; };' >> /etc/apt/apt.conf.d/01proxy
-    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/webupd8team-java.list
-    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/webupd8team-java.list
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
-    apt-get update
-    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-    apt-get -qy install oracle-java8-installer
+    echo --- Install Java 8 \(OpenJDK\)
+    apt-get -qy install -t jessie-backports openjdk-8-jdk
+    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
     echo --- Build software
     ant -f /vagrant/build.xml
