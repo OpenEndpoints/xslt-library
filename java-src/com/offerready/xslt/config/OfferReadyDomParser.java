@@ -12,50 +12,7 @@ import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 
 public class OfferReadyDomParser extends DomParser {
-
-    /**
-     * @param elementName for example "displayName"
-     * @return null if no element of this displayName found
-     */
-    protected static LocalizableText parseOptionalLocalizableText(Element container, String elementName)
-    throws ConfigurationException {
-        String defaultLang = null;
-        Map<String,String> nonDefaultLang = new HashMap<String,String>();
-        for (Element textElement : getSubElements(container, elementName)) {
-            String language = textElement.getAttribute("language"); // empty string if no langage="x" defined
-            if (language.equals("")) {
-                if (defaultLang != null)
-                    throw new ConfigurationException("Multiple <" + elementName + "> without language attribute found");
-                defaultLang = textElement.getTextContent();
-            } else {
-                if ( ! language.matches("[a-z]{2}")) throw new ConfigurationException("<" + elementName +
-                    " language='" + language + "'> found, yet language must be 2 letters");
-                if (nonDefaultLang.containsKey(language)) throw new ConfigurationException("<" + elementName +
-                    " language='" + language + "'> found multiple times");
-                nonDefaultLang.put(language, textElement.getTextContent());
-            }
-        }
-        if (nonDefaultLang.size() > 0 && defaultLang == null) throw new ConfigurationException("<" + elementName +
-            "> is missing the default entry without 'language' attribute");
-
-        if (defaultLang != null) return new LocalizableText(defaultLang, nonDefaultLang);
-        else return null;
-    }
-
-    protected static LocalizableText parseMandatoryLocalizableText(Element container, String elementName)
-    throws ConfigurationException {
-        LocalizableText result = parseOptionalLocalizableText(container, elementName);
-        if (result == null) throw new ConfigurationException("<" + elementName + "> is mandatory");
-        return result;
-    }
-
-    protected static LocalizableText parseOptionalLocalizableTextOrDefault(Element container, String elementName)
-    throws ConfigurationException {
-        LocalizableText result = parseOptionalLocalizableText(container, elementName);
-        if (result == null) return new LocalizableText("", new HashMap<String,String>());
-        return result;
-    }
-
+    
     /** @return a PrivilegeRestriction allowing all users, if tag is missing */
     protected static PrivilegeRestriction parsePrivilegeRestriction(Element container) throws ConfigurationException {
         List<Element> n = getSubElements(container, "privilege-restriction");
