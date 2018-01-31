@@ -56,36 +56,6 @@ public class OfferReadyDomParser extends DomParser {
         return result;
     }
 
-    /** @return null if no &lt;img> tag found */
-    protected static LocalizableImage parseOptionalLocalizableImage(Element container)
-    throws ConfigurationException {
-        Map<String, LocalizableImage.Img> map = new HashMap<String, LocalizableImage.Img>();
-        for (Element imgElement : getSubElements(container, "img")) {
-            String language = imgElement.getAttribute("language"); // empty string if no langage="x" defined
-            if ( ! language.equals("") && ! language.matches("[a-z]{2}")) throw new ConfigurationException("<img language='" +
-                language + "'> found, yet language must be 2 letters");
-            if (map.containsKey(language)) throw new ConfigurationException("<img language='"+ language +"'> found multiple times");
-
-            LocalizableImage.Img i = new LocalizableImage.Img();
-            i.url = imgElement.getAttribute("src");
-            if (i.url.equals("")) throw new ConfigurationException("<img language='" + language + "> missing 'src' attribute");
-            try {
-                i.width  = imgElement.getAttribute("width") .equals("") ? 0 : Integer.parseInt(imgElement.getAttribute("width"));
-                i.height = imgElement.getAttribute("height").equals("") ? 0 : Integer.parseInt(imgElement.getAttribute("height"));
-            }
-            catch (NumberFormatException e) {
-                throw new ConfigurationException("<img language='"+ language +"'>: width or height are not numbers");
-            }
-
-            map.put(language, i);
-        }
-        if (map.size() > 0 && ! map.containsKey(""))
-            throw new ConfigurationException("<img> is missing the default entry without 'language' attribute");
-
-        if (map.size() > 0) return new LocalizableImage(map);
-        else return null;
-    }
-
     /** @return a PrivilegeRestriction allowing all users, if tag is missing */
     protected static PrivilegeRestriction parsePrivilegeRestriction(Element container) throws ConfigurationException {
         List<Element> n = getSubElements(container, "privilege-restriction");
