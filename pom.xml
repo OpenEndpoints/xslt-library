@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.offerready</groupId>
+    <artifactId>xslt-library</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Offer-Ready XSLT Library</name>
+    <description>Utility classes for XSLT processing used at Offer-Ready GmbH</description>
+    <url>https://github.com/offerready/xslt-library</url>
+    <inceptionYear>2013</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Adrian Smith</name>
+            <email>adrian.m.smith@gmail.com</email>
+            <url>https://www.databasesandlife.com/</url>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/offerready/xslt-library</connection>
+        <developerConnection>scm:git:https://github.com/offerready/xslt-library</developerConnection>
+        <url>https://github.com/offerready/xslt-library/tree/master</url>
+    </scm>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.databasesandlife</groupId>
+            <artifactId>java-common</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.7.0-5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>0.95</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20151123</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>offerready-xslt-library-${project.version}</finalName>
+        <resources><resource><directory>${basedir}/src/main/java</directory></resource></resources>
+        <testResources><testResource><directory>${basedir}/src/test/java</directory></testResource></testResources>
+    </build>
+</project>

@@ -3,8 +3,14 @@
 
 Vagrant.configure(2) do |config|
   config.vm.hostname = "offerready-xslt-library"
-  config.vm.box = "debian/contrib-jessie64"
+  config.vm.box = "ubuntu/xenial64"
   
+  if not Vagrant::Util::Platform.windows? then
+    config.vm.synced_folder "~/.m2", "/home/ubuntu/.m2"
+    config.vm.synced_folder "~/.m2", "/root/.m2"
+    config.vm.synced_folder "~/.gnupg", "/home/ubuntu/.gnupg"
+  end
+
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "500"
   end
@@ -15,17 +21,15 @@ Vagrant.configure(2) do |config|
     set -e  # stop on error
 
     echo --- General OS installation
-    echo "deb http://ftp.de.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/backports.list
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade -qy    # grub upgrade warnings mess with the terminal
-    apt-get -qy install vim ant subversion ntp unattended-upgrades less
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y    # grub upgrade warnings mess with the terminal
+    apt-get -q -y install vim subversion ntp unattended-upgrades
 
-    echo --- Install Java 8 \(OpenJDK\)
-    apt-get -qy install -t jessie-backports openjdk-8-jdk
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    echo --- Install Java 8 \(OpenJDK\) and Maven
+    apt-get -qy install openjdk-8-jdk maven
 
     echo --- Build software
-    ant -f /vagrant/build.xml
+    mvn -f /vagrant/pom.xml clean package
   }
   
   config.vm.provision "shell", run: "always", inline: %q{
@@ -35,7 +39,7 @@ Vagrant.configure(2) do |config|
     echo ''
     echo '-----------------------------------------------------------------'
     echo 'After "vagrant ssh", use:'
-    echo '  ant -f /vagrant/build.xml'
+    echo '  mvn -f /vagrant/pom.xml clean package'
     echo '-----------------------------------------------------------------'
     echo ''
   }
