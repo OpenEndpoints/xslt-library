@@ -21,7 +21,7 @@ public class HtmlBodyExtractor {
     
     protected List<String> scriptsToIgnore = new ArrayList<String>();
     
-    class Range {
+    static class Range {
         int startIncl, endExcl;
         Range(int s, int e) { startIncl = s; endExcl = e; }
         boolean overlaps(Range x) { 

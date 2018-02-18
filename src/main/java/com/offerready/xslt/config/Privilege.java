@@ -9,7 +9,7 @@ public class Privilege implements Comparable<Privilege>, Serializable {
     public Privilege(String n) { name = n; }
     public String getName() { return name; }
     @Override public String toString() { return name; }
-    @Override public boolean equals(Object obj) { return obj != null && ((Privilege)obj).name.equals(name); }
+    @Override public boolean equals(Object obj) { return obj instanceof Privilege && ((Privilege)obj).name.equals(name); }
     @Override public int hashCode() { return name.hashCode(); }
     public int compareTo(Privilege o) { return name.compareTo(o.name); }
     /** For GWT only */ public Privilege() { }

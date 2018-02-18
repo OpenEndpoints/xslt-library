@@ -39,7 +39,7 @@ import net.sf.saxon.TransformerFactoryImpl;
 @SuppressWarnings("serial")
 public class WeaklyCachedXsltTransformer {
     
-    protected static Map<String, WeakReference<WeaklyCachedXsltTransformer>> cache 
+    private static final Map<String, WeakReference<WeaklyCachedXsltTransformer>> cache
         = new HashMap<String, WeakReference<WeaklyCachedXsltTransformer>>();
     
     public static class DocumentTemplateInvalidException extends Exception {
