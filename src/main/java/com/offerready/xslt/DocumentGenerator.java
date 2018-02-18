@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -66,15 +68,15 @@ import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
  */
 public class DocumentGenerator {
     
-    protected final DocumentOutputDefinition defn;
-    protected final WeaklyCachedXsltTransformer transformer;
-    protected File fopBaseDirOrNull = null, fopConfigOrNull = null, imagesBase = null;
+    protected final @Nonnull DocumentOutputDefinition defn;
+    protected final @Nonnull WeaklyCachedXsltTransformer transformer;
+    protected @CheckForNull File fopBaseDirOrNull = null, fopConfigOrNull = null, imagesBase = null;
     
     public static class StyleVisionXslt implements Xslt {
-        public final File xsltFile;
-        public StyleVisionXslt(File x) { xsltFile = x; }
-        @Override public String calculateCacheKey() { return MD5Hex.md5(xsltFile); }
-        @Override public Document parseDocument() {
+        public final @Nonnull File xsltFile;
+        public StyleVisionXslt(@Nonnull File x) { xsltFile = x; }
+        @Override public @Nonnull String calculateCacheKey() { return MD5Hex.md5(xsltFile); }
+        @Override public @Nonnull Document parseDocument() {
             try {
                 DocumentBuilderFactory builderFact = DocumentBuilderFactory.newInstance();
                 builderFact.setNamespaceAware(true);
@@ -110,7 +112,7 @@ public class DocumentGenerator {
         }
     }
     
-    public DocumentGenerator(XsltCompilationThreads threads, final DocumentOutputDefinition defn) {
+    public DocumentGenerator(@Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn) {
         this.defn = defn;
         if (defn.xsltFileOrNull == null)
             this.transformer = WeaklyCachedXsltTransformer.getIdentityTransformer();
@@ -119,16 +121,16 @@ public class DocumentGenerator {
                 threads, defn.xsltFileOrNull.getAbsolutePath(), new StyleVisionXslt(defn.xsltFileOrNull));
     }
     
-    public void setFopConfigOrNull(File fopBaseDirOrNull, File fopConfigOrNull) {
+    public void setFopConfigOrNull(@CheckForNull File fopBaseDirOrNull, @CheckForNull File fopConfigOrNull) {
         this.fopBaseDirOrNull = fopBaseDirOrNull;
         this.fopConfigOrNull = fopConfigOrNull;
     }
 
-    public void setImagesBase(File imagesBase) {
+    public void setImagesBase(@Nonnull File imagesBase) {
         this.imagesBase = imagesBase;
     }
 
-    protected void writePlainXml(DocumentGenerationDestination response, Document xml) throws IOException {
+    protected void writePlainXml(@Nonnull DocumentGenerationDestination response, @Nonnull Document xml) throws IOException {
         try {
             Properties systemProperties = System.getProperties();
             systemProperties.remove("javax.xml.transform.TransformerFactory");
@@ -148,7 +150,7 @@ public class DocumentGenerator {
         catch (TransformerException e) { throw new RuntimeException(e); }
     }
 
-    protected void writePdfFromXslFo(OutputStream pdf, Document fo, URIResolver uriResolverOrNull) {
+    protected void writePdfFromXslFo(@Nonnull OutputStream pdf, @Nonnull Document fo, @CheckForNull URIResolver uriResolverOrNull) {
         try (Timer t = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
             FopFactory fopFactory = FopFactory.newInstance();
@@ -186,8 +188,10 @@ public class DocumentGenerator {
      * @param uriResolverOrNull if not null, pass an object which can, for example, fetch or create images via programmatic logic
      * @throws DocumentTemplateInvalidException in case the XSLT template wasn't valid
      */
-    public void transform(DocumentGenerationDestination response, Document xml, boolean transform, URIResolver uriResolverOrNull)
-    throws DocumentTemplateInvalidException {
+    public void transform(
+        @Nonnull DocumentGenerationDestination response, @Nonnull Document xml,
+        boolean transform, @CheckForNull URIResolver uriResolverOrNull
+    ) throws DocumentTemplateInvalidException {
         try {
             if (transform == false) {
                 writePlainXml(response, xml);

@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
 
 import com.databasesandlife.util.Timer;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 /**
  * Extracts the body of an HTML report document.
  *    <p>
@@ -21,7 +24,7 @@ public class HtmlBodyExtractor {
     
     protected List<String> scriptsToIgnore = new ArrayList<String>();
     
-    static class Range {
+    protected static class Range {
         int startIncl, endExcl;
         Range(int s, int e) { startIncl = s; endExcl = e; }
         boolean overlaps(Range x) { 
@@ -35,12 +38,12 @@ public class HtmlBodyExtractor {
      * For example if JQuery should not be included; simply add "jquery" to this method and this &lt;script&gt;
      * tag will not be included in the result.
      */
-    public HtmlBodyExtractor addScriptToIgnore(String scriptSubstring) {
+    public @Nonnull HtmlBodyExtractor addScriptToIgnore(@Nonnull String scriptSubstring) {
         scriptsToIgnore.add(scriptSubstring);
         return this;
     }
     
-    protected String ignoreScripts(String html) {
+    protected @Nonnull String ignoreScripts(@Nonnull String html) {
         for (String s : scriptsToIgnore)
             html = html.replaceAll(
                 "<script src=['\"][^'\"]*" + Pattern.quote(s) + "[^'\"]*['\"]></script>", 
@@ -49,9 +52,9 @@ public class HtmlBodyExtractor {
     }
     
     protected void extractElements(
-        StringBuilder result, String input, 
-        List<Range> ranges, 
-        String start, String endOfStartOrNull, String end
+        @Nonnull StringBuilder result, @Nonnull String input,
+        @Nonnull List<Range> ranges,
+        @Nonnull String start, @CheckForNull String endOfStartOrNull, @Nonnull String end
     ) {
         int startIdx = -1;
         StringBuffer ourResult = new StringBuffer();
@@ -70,7 +73,7 @@ public class HtmlBodyExtractor {
         result.insert(0, ourResult);
     }
     
-    public String extractBody(String htmlText) {
+    public @Nonnull String extractBody(@Nonnull String htmlText) {
         try (Timer t = new Timer("HtmlBodyExtractor.extractBody")) {
             StringBuilder result  = new StringBuilder();  // 2.5 seconds at 1k iterations on i3
             List<Range> ranges = new ArrayList<Range>();

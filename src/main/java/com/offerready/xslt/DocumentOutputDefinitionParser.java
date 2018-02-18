@@ -10,13 +10,16 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import com.offerready.xslt.config.OfferReadyDomParser;
 import com.offerready.xslt.DocumentOutputDefinition.OutputConversion;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 
 /**
  * Parsers which parses document-definition files for any XSLT-style document generation application.
  */
 public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
 
-    public static String parseOptionalDownloadFilename(Element outputDefnElement) throws ConfigurationException {
+    public static @CheckForNull String parseOptionalDownloadFilename(@Nonnull Element outputDefnElement) throws ConfigurationException {
         String downloadFilename = null;
         Element downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
         if (downloadFilenameElement != null) {
@@ -33,7 +36,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
      * @param templateContainerDirectory the directory which will contain "xyz/report.xslt" for "xslt-directory"="xyz"
      */
     protected static DocumentOutputDefinition parseOutputDefinition(
-        File templateContainerDirectory, Element outputDefnElement
+        @Nonnull File templateContainerDirectory, @Nonnull Element outputDefnElement
     ) throws ConfigurationException {
         // xslt-directory is legacy, prefer xslt-file
         assertNoOtherElements(outputDefnElement, 
@@ -64,10 +67,9 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
         Element contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
         if (contentTypeElement != null) contentType = getMandatoryAttribute(contentTypeElement, "type");
         
-        DocumentOutputDefinition result = new DocumentOutputDefinition();
+        DocumentOutputDefinition result = new DocumentOutputDefinition(placeholderValues);
         result.xsltFileOrNull = xsltFileOrNull;
-        result.placeholderValues = placeholderValues;
-        result.outputConversion = 
+        result.outputConversion =
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :
             getSubElements(outputDefnElement, "convert-output-xml-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :  // deprecated
             getSubElements(outputDefnElement, "convert-output-xsl-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :

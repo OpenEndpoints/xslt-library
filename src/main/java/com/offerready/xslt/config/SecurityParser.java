@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,7 +23,7 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 /** Parses XML which has &lt;security&gt; containing a set of &lt;secret-key&gt; elements. */
 public class SecurityParser extends DomParser {
     
-    public static String[] parse(InputStream i)
+    public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
         try (Timer t = new Timer("parse-security-xml")) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -43,7 +44,7 @@ public class SecurityParser extends DomParser {
         catch (ParserConfigurationException e) { throw new RuntimeException(e); }
     }
 
-    public static String[] parse(File file)
+    public static @Nonnull String[] parse(@Nonnull File file)
     throws ConfigurationException {
         try {
             try (InputStream i = new FileInputStream(file)) { return parse(i); }

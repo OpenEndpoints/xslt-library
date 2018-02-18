@@ -4,6 +4,8 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -62,16 +64,16 @@ public class WeaklyCachedXsltTransformer {
         Transformer newTransformer();
     }
   
-    protected String error = null;
-    
-    /** never null */ 
+    protected @CheckForNull String error = null;
+
+    /** After object is initializd, this is never null */
     protected XsltTransformerFactory xsltTransformerFactory;
     
     protected class CompileJob implements Runnable {
-        protected String md5, nameForLogging;
-        protected Document xslt;
+        protected @Nonnull String md5, nameForLogging;
+        protected @Nonnull Document xslt;
         
-        protected CompileJob(String m, String n, Document x) { md5 = m; nameForLogging = n; xslt = x; }
+        protected CompileJob(@Nonnull String m, @Nonnull String n, @Nonnull Document x) { md5 = m; nameForLogging = n; xslt = x; }
         
         public void run() {
             final StringBuilder errorString = new StringBuilder();
@@ -105,7 +107,7 @@ public class WeaklyCachedXsltTransformer {
     }
     
     public static class XsltCompilationThreads extends ThreadPool {
-        Map<String, WeaklyCachedXsltTransformer> toCompileForXsltMd5 = new HashMap<String, WeaklyCachedXsltTransformer>();
+        final Map<String, WeaklyCachedXsltTransformer> toCompileForXsltMd5 = new HashMap<String, WeaklyCachedXsltTransformer>();
         @Override public void execute() {
             try (Timer t = new Timer(threadNamePrefix)) { 
                 super.execute(); 
@@ -113,8 +115,8 @@ public class WeaklyCachedXsltTransformer {
         }
     }
     
-    public synchronized static WeaklyCachedXsltTransformer getTransformerOrScheduleCompilation(
-        XsltCompilationThreads threads, String nameForLogging, Xslt xslt
+    public synchronized static @Nonnull WeaklyCachedXsltTransformer getTransformerOrScheduleCompilation(
+        @Nonnull XsltCompilationThreads threads, @Nonnull String nameForLogging, @Nonnull Xslt xslt
     ) {
         String cacheKey = xslt.calculateCacheKey();
         
@@ -131,7 +133,7 @@ public class WeaklyCachedXsltTransformer {
         return result;
     }
     
-    public static WeaklyCachedXsltTransformer getIdentityTransformer() {
+    public static @Nonnull WeaklyCachedXsltTransformer getIdentityTransformer() {
         TransformerFactoryImpl transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
             TransformerFactoryImpl.class.getName(), DocumentGenerator.class.getClassLoader());
         
@@ -149,7 +151,7 @@ public class WeaklyCachedXsltTransformer {
         if (error != null) throw new DocumentTemplateInvalidException(error);
     }
 
-    public static WeaklyCachedXsltTransformer newInvalidTransformer(String error) {
+    public static @Nonnull WeaklyCachedXsltTransformer newInvalidTransformer(@Nonnull String error) {
         WeaklyCachedXsltTransformer result = new WeaklyCachedXsltTransformer();
         result.error = error;
         return result;

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -30,8 +32,8 @@ public class PostRequestClient {
     
     public static class PostFailedException extends Exception {
         public int statusCode;
-        public String statusMessage;
-        public PostFailedException(int c, String s) { 
+        public @Nonnull String statusMessage;
+        public PostFailedException(int c, @Nonnull String s) {
             super("HTTP returned status code " + c + ": " + s);
             statusCode = c; statusMessage = s;
         }
@@ -46,8 +48,8 @@ public class PostRequestClient {
      * @param bodyContentType if null, GET is done instead of POST 
      */
     public void post(
-        DocumentGenerationDestination dest, URL url, Map<String, String> getParameters, 
-        String bodyContentType, OutputStreamFiller postBody
+        @Nonnull DocumentGenerationDestination dest, @Nonnull URL url, @Nonnull Map<String, String> getParameters,
+        @CheckForNull String bodyContentType, @Nonnull OutputStreamFiller postBody
     ) throws PostFailedException {
         try (Timer t = new Timer("send-post-request: " + url)) {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -84,7 +86,7 @@ public class PostRequestClient {
      * @param xmlOrNull if null then a GET request is done instead of a POST 
      */
     public void postXml(
-        DocumentGenerationDestination dest, final URL url, Map<String, String> getParameters, final Element xmlOrNull
+        @Nonnull DocumentGenerationDestination dest, @Nonnull URL url, @Nonnull Map<String, String> getParameters, @CheckForNull Element xmlOrNull
     ) throws PostFailedException {
         post(dest, url, getParameters, xmlOrNull == null ? null : "text/xml", new OutputStreamFiller() {
             public void writeToOutputStream(OutputStream o) {

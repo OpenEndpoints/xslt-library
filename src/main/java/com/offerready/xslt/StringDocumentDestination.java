@@ -1,5 +1,6 @@
 package com.offerready.xslt;
 
+import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,7 @@ public class StringDocumentDestination extends BufferedDocumentGenerationDestina
             throw new RuntimeException("contentType '"+contentType+"' does not contain '"+charsetSuffix+"'");
     }
     
-    public String getContentType() {
+    public @Nonnull String getContentType() {
         assertValid();
         return charsetSuffix.matcher(contentType).replaceAll("");
     }

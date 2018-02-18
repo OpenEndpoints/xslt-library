@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.annotation.Nonnull;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Part;
@@ -13,7 +14,7 @@ import javax.mail.internet.MimeBodyPart;
 
 public class EmailPartDocumentDestination extends BufferedDocumentGenerationDestination {
 
-    public BodyPart getBodyPart() {
+    public @Nonnull BodyPart getBodyPart() {
         try {
             DataSource dataSource = new DataSource() {
                 @Override public String getContentType() { return contentType; }

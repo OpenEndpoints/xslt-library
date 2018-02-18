@@ -11,10 +11,12 @@ import org.w3c.dom.Element;
 import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 
+import javax.annotation.Nonnull;
+
 public class OfferReadyDomParser extends DomParser {
     
     /** @return a PrivilegeRestriction allowing all users, if tag is missing */
-    protected static PrivilegeRestriction parsePrivilegeRestriction(Element container) throws ConfigurationException {
+    protected static @Nonnull PrivilegeRestriction parsePrivilegeRestriction(@Nonnull Element container) throws ConfigurationException {
         List<Element> n = getSubElements(container, "privilege-restriction");
         if (n.size() > 1) throw new ConfigurationException("Too many <privilege-restriction> elements");
         if (n.isEmpty()) return PrivilegeRestriction.allowAny();

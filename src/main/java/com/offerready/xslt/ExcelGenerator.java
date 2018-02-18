@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -53,21 +55,21 @@ public class ExcelGenerator extends DefaultHandler {
     
     protected static class CellFromHtml {
         public int colspan = 1;
-        public CellFormat format = new CellFormat();
+        public @Nonnull CellFormat format = new CellFormat();
         public boolean forceText = false;
-        public StringBuilder string = new StringBuilder();
+        public @Nonnull StringBuilder string = new StringBuilder();
     }
     
     // Configuration
     protected boolean magicNumbers;
     
     // Connection to Excel
-    protected WritableWorkbook workbook;
-    protected WritableSheet excelSheet;
+    protected @Nonnull WritableWorkbook workbook;
+    protected @Nonnull WritableSheet excelSheet;
     
     // Intermediate store of values
     protected int nextRowInExcel = 0;
-    protected List<Integer> maxCharsSeenInColumn = new ArrayList<Integer>();
+    protected @Nonnull List<Integer> maxCharsSeenInColumn = new ArrayList<Integer>();
     protected List<List<CellFromHtml>> currentHeadMatrix=null, currentFootMatrix=null, currentBodyMatrix=null, currentMatrix=null;
     protected List<CellFromHtml> currentRow=null;
     protected CellFromHtml currentCell=null;
@@ -77,7 +79,7 @@ public class ExcelGenerator extends DefaultHandler {
     Timer timer;
     
     /** @param xls is closed after transformation */
-    public ExcelGenerator(boolean magicNumbers, OutputStream xls) {
+    public ExcelGenerator(boolean magicNumbers, @Nonnull OutputStream xls) {
         try {
             this.magicNumbers = magicNumbers;
             
@@ -88,7 +90,7 @@ public class ExcelGenerator extends DefaultHandler {
     }
     
     /** @return String or Number */
-    protected Object parseString(String str) {
+    protected @Nonnull Object parseString(@Nonnull String str) {
         try { return new Double(str); }
         catch (NumberFormatException e) { }
         
@@ -110,7 +112,7 @@ public class ExcelGenerator extends DefaultHandler {
     // If we generate a new WritableCellFormat for each cell, at some point we get the error:
     //    Warning:  Maximum number of format records exceeded.  Using default format.
     // Therefore we have to pre-generate all possible formats in advance.
-    protected Map<CellFormat, WritableCellFormat> generateWriteableCellFormats(WritableCellFormat base) {
+    protected @Nonnull Map<CellFormat, WritableCellFormat> generateWriteableCellFormats(@Nonnull WritableCellFormat base) {
         try {
             WritableFont bold = new WritableFont(WritableFont.createFont(base.getFont().getName()), 
                 base.getFont().getPointSize(), WritableFont.BOLD);
@@ -138,7 +140,7 @@ public class ExcelGenerator extends DefaultHandler {
         catch (WriteException e) { throw new RuntimeException(e); }
     }
     
-    protected void writeMatrixToExcel(List<List<CellFromHtml>> matrix) {
+    protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
         try {
             Map<CellFormat, WritableCellFormat> normalFormat = 
                 generateWriteableCellFormats(new WritableCellFormat());
@@ -250,7 +252,7 @@ public class ExcelGenerator extends DefaultHandler {
         catch (WriteException e) { throw new SAXException(e); }
     }
     
-    public static void writeExcelBinaryFromExcelXml(boolean magicNumbers, OutputStream xls, InputStream xml) {
+    public static void writeExcelBinaryFromExcelXml(boolean magicNumbers, @Nonnull OutputStream xls, @Nonnull InputStream xml) {
         try {
             ExcelGenerator handler = new ExcelGenerator(magicNumbers, xls);
             SAXParserFactory.newInstance().newSAXParser().parse(xml, handler);

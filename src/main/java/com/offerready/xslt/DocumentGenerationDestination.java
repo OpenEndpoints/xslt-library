@@ -1,5 +1,7 @@
 package com.offerready.xslt;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.io.OutputStream;
 
 /**
@@ -16,11 +18,11 @@ import java.io.OutputStream;
  */
 public interface DocumentGenerationDestination {
     
-    public void setContentType(String contentType);
+    public void setContentType(@Nonnull String contentType);
 
     /** @param filename can be null indicating no particular filename is preferred */
-    public void setContentDispositionToDownload(String filename);
+    public void setContentDispositionToDownload(@CheckForNull String filename);
     
-    public OutputStream getOutputStream();
+    public @Nonnull OutputStream getOutputStream();
 
 }
