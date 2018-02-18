@@ -78,9 +78,9 @@ public class WeaklyCachedXsltTransformer {
         public void run() {
             val errorString = new StringBuilder();
             ErrorListener errorListener = new ErrorListener() {
-                public void warning(TransformerException e) { errorString.append("\nERROR: " + e.getMessage()); }
-                public void error(TransformerException e) { errorString.append("\nWARN: " + e.getMessage()); }
-                public void fatalError(TransformerException e) { errorString.append("\nFATAL: " + e.getMessage()); }
+                public void warning(TransformerException e) { errorString.append("\nERROR: ").append(e.getMessage()); }
+                public void error(TransformerException e) { errorString.append("\nWARN: ").append(e.getMessage()); }
+                public void fatalError(TransformerException e) { errorString.append("\nFATAL: ").append(e.getMessage()); }
             };
 
             try (val t = new Timer("Compiling XSLT '" + nameForLogging + "'")) {
