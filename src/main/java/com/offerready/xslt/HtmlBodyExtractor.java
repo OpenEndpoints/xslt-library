@@ -58,7 +58,7 @@ public class HtmlBodyExtractor {
         @Nonnull String start, @CheckForNull String endOfStartOrNull, @Nonnull String end
     ) {
         int startIdx = -1;
-        val ourResult = new StringBuffer();
+        val ourResult = new StringBuilder();
         while ((startIdx = input.indexOf(start, startIdx+1)) >= 0) {
             int idxOfEndTag = input.indexOf(end, startIdx);
             Range range = endOfStartOrNull == null 
