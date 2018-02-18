@@ -106,9 +106,7 @@ public class DocumentGenerator {
                 
                 return result;
             }
-            catch (SAXException e) { throw new RuntimeException(e); }
-            catch (ParserConfigurationException e) { throw new RuntimeException(e); }
-            catch (IOException e) { throw new RuntimeException(e); }
+            catch (SAXException | ParserConfigurationException | IOException e) { throw new RuntimeException(e); }
         }
     }
     
@@ -146,7 +144,6 @@ public class DocumentGenerator {
             transformer.transform(source, result);
             response.getOutputStream().close();
         }
-        catch (TransformerConfigurationException e) { throw new RuntimeException(e); }
         catch (TransformerException e) { throw new RuntimeException(e); }
     }
 
@@ -171,11 +168,7 @@ public class DocumentGenerator {
             // Start XSLT transformation and FOP processing
             transformer.transform(new DOMSource(fo), res);
         }
-        catch (TransformerException e) { throw new RuntimeException(e); }
-        catch (FOPException e) { throw new RuntimeException(e); }
-        catch (MalformedURLException e) { throw new RuntimeException(e); }
-        catch (IOException e) { throw new RuntimeException(e); }
-        catch (SAXException e) { throw new RuntimeException(e); }
+        catch (TransformerException | IOException | SAXException e) { throw new RuntimeException(e); }
     }
 
     public void assertTemplateValid() throws DocumentTemplateInvalidException {
@@ -239,7 +232,6 @@ public class DocumentGenerator {
     
             response.getOutputStream().close();
         }
-        catch (TransformerException e) { throw new RuntimeException(e); }
-        catch (IOException e) { throw new RuntimeException(e); }
+        catch (TransformerException | IOException e) { throw new RuntimeException(e); }
     }
 }

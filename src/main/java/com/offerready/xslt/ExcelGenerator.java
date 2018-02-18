@@ -171,7 +171,6 @@ public class ExcelGenerator extends DefaultHandler {
                 nextRowInExcel++;
             }
         }
-        catch (RowsExceededException e) { throw new RuntimeException(e); }
         catch (WriteException e) { throw new RuntimeException(e); }
     }
     
@@ -246,8 +245,7 @@ public class ExcelGenerator extends DefaultHandler {
             workbook.close();
             timer.close();
         }
-        catch (IOException e) { throw new SAXException(e); }
-        catch (WriteException e) { throw new SAXException(e); }
+        catch (IOException | WriteException e) { throw new SAXException(e); }
     }
     
     public static void writeExcelBinaryFromExcelXml(boolean magicNumbers, @Nonnull OutputStream xls, @Nonnull InputStream xml) {
@@ -256,7 +254,6 @@ public class ExcelGenerator extends DefaultHandler {
             SAXParserFactory.newInstance().newSAXParser().parse(xml, handler);
         }
         catch (SAXException e) { throw new RuntimeException("Input XML to convertion to XLS process is not valid", e); }
-        catch (ParserConfigurationException e) { throw new RuntimeException(e); }
-        catch (IOException e) { throw new RuntimeException(e); }
+        catch (ParserConfigurationException | IOException e) { throw new RuntimeException(e); }
     }
 }
