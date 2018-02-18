@@ -46,7 +46,7 @@ public class PrivilegeRestriction implements Serializable {
     }
 
     public static @Nonnull <P extends HasPrivilegeRestriction> List<P> restrict(@Nonnull Collection<P> input, @Nonnull Privilege privilege) {
-        List<P> result = new Vector<P>(input.size());
+        List<P> result = new ArrayList<P>(input.size());
         for (P candidate : input)
             if (candidate.getPrivilegeRestriction().isAllowed(privilege))
                 result.add(candidate);
