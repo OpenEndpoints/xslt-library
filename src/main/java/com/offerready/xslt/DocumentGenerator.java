@@ -172,7 +172,7 @@ public class DocumentGenerator {
     }
 
     public void assertTemplateValid() throws DocumentTemplateInvalidException {
-        if (transformer != null) transformer.assertValid();
+        transformer.assertValid();
     }
     
     /**
