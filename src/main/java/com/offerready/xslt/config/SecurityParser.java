@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import lombok.val;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,17 +26,15 @@ public class SecurityParser extends DomParser {
     
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
-        try (Timer t = new Timer("parse-security-xml")) {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(i);
+        try (val t = new Timer("parse-security-xml")) {
+            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(i);
 
-            Node root = doc.getDocumentElement();
+            val root = doc.getDocumentElement();
             if ( ! root.getNodeName().equals("security")) throw new ConfigurationException("Root node must be <security>");
 
             assertNoOtherElements(root, "secret-key");
             
-            List<String> result = new ArrayList<String>();
+            val result = new ArrayList<String>();
             for (Element e : getSubElements(root, "secret-key")) result.add(e.getTextContent());
             return result.toArray(new String[0]);
         }
@@ -47,7 +46,7 @@ public class SecurityParser extends DomParser {
     public static @Nonnull String[] parse(@Nonnull File file)
     throws ConfigurationException {
         try {
-            try (InputStream i = new FileInputStream(file)) { return parse(i); }
+            try (val i = new FileInputStream(file)) { return parse(i); }
         }
         catch (IOException e) { throw new ConfigurationException("Problem with '"+file+"'", e); }
     }

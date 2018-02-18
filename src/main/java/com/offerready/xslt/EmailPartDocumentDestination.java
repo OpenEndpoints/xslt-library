@@ -1,5 +1,7 @@
 package com.offerready.xslt;
 
+import lombok.val;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,14 +18,14 @@ public class EmailPartDocumentDestination extends BufferedDocumentGenerationDest
 
     public @Nonnull BodyPart getBodyPart() {
         try {
-            DataSource dataSource = new DataSource() {
+            val dataSource = new DataSource() {
                 @Override public String getContentType() { return contentType; }
                 @Override public InputStream getInputStream() { return new ByteArrayInputStream(body.toByteArray()); }
                 @Override public String getName() { return filenameOrNull; }
                 @Override public OutputStream getOutputStream() { throw new RuntimeException("unreachable"); }
             };
-    
-            BodyPart filePart = new MimeBodyPart();
+
+            val filePart = new MimeBodyPart();
             filePart.setDataHandler(new DataHandler(dataSource));
             if (filenameOrNull != null) {
                 filePart.setFileName(filenameOrNull);

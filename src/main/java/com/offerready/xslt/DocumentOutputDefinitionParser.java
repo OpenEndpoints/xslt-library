@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.val;
 import org.w3c.dom.Element;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
@@ -21,7 +22,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
 
     public static @CheckForNull String parseOptionalDownloadFilename(@Nonnull Element outputDefnElement) throws ConfigurationException {
         String downloadFilename = null;
-        Element downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
+        val downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
         if (downloadFilenameElement != null) {
             downloadFilename = downloadFilenameElement.getTextContent();
             if ( ! downloadFilename.matches("[\\w\\.\\-]+"))
@@ -45,8 +46,8 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             "content-type", "download-filename");
         
         final File xsltFileOrNull;
-        Element xsltFileEl = getOptionalSingleSubElement(outputDefnElement, "xslt-file");
-        Element xsltDirEl = getOptionalSingleSubElement(outputDefnElement, "xslt-directory");
+        val xsltFileEl = getOptionalSingleSubElement(outputDefnElement, "xslt-file");
+        val xsltDirEl = getOptionalSingleSubElement(outputDefnElement, "xslt-directory");
         if (xsltFileEl != null) {
             xsltFileOrNull = new File(templateContainerDirectory, getMandatoryAttribute(xsltFileEl, "name"));
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
@@ -56,7 +57,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
         } else xsltFileOrNull = null;
         
-        Map<String, String> placeholderValues = new HashMap<String, String>();
+        val placeholderValues = new HashMap<String, String>();
         for (Element p : getSubElements(outputDefnElement, "placeholder-value")) {
             String key = getMandatoryAttribute(p, "placeholder-name");
             String value = getMandatoryAttribute(p, "value");
@@ -64,10 +65,10 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
         }
 
         String contentType = null;
-        Element contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
+        val contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
         if (contentTypeElement != null) contentType = getMandatoryAttribute(contentTypeElement, "type");
         
-        DocumentOutputDefinition result = new DocumentOutputDefinition(placeholderValues);
+        val result = new DocumentOutputDefinition(placeholderValues);
         result.xsltFileOrNull = xsltFileOrNull;
         result.outputConversion =
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :

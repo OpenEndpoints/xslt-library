@@ -32,6 +32,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.CellValue;
 import jxl.write.biff.RowsExceededException;
 
+import lombok.val;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -114,19 +115,19 @@ public class ExcelGenerator extends DefaultHandler {
     // Therefore we have to pre-generate all possible formats in advance.
     protected @Nonnull Map<CellFormat, WritableCellFormat> generateWriteableCellFormats(@Nonnull WritableCellFormat base) {
         try {
-            WritableFont bold = new WritableFont(WritableFont.createFont(base.getFont().getName()), 
+            val bold = new WritableFont(WritableFont.createFont(base.getFont().getName()),
                 base.getFont().getPointSize(), WritableFont.BOLD);
             
-            Map<CellFormat, WritableCellFormat> result = new HashMap<>();
+            val result = new HashMap<CellFormat, WritableCellFormat>();
             for (boolean isCentered : new boolean[] { true, false }) {
                 for (boolean isBold : new boolean[] { true, false }) {
                     for (boolean hasTopBorder : new boolean[] { true, false }) {
-                        CellFormat f = new CellFormat();
+                        val f = new CellFormat();
                         f.isCentered = isCentered;
                         f.isBold = isBold;
                         f.hasTopBorder = hasTopBorder;
-                        
-                        WritableCellFormat format = new WritableCellFormat(base);
+
+                        val format = new WritableCellFormat(base);
                         if (isCentered) format.setAlignment(Alignment.CENTRE);
                         if (isBold) format.setFont(bold);
                         if (hasTopBorder) format.setBorder(Border.TOP, BorderLineStyle.THIN);
@@ -142,16 +143,13 @@ public class ExcelGenerator extends DefaultHandler {
     
     protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
         try {
-            Map<CellFormat, WritableCellFormat> normalFormat = 
-                generateWriteableCellFormats(new WritableCellFormat());
-            Map<CellFormat, WritableCellFormat> twoDecimalPlaces = 
-                generateWriteableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
-            
-            for (int rowIdx = 0; rowIdx < matrix.size(); rowIdx++) {
-                List<CellFromHtml> row = matrix.get(rowIdx);
+            val normalFormat = generateWriteableCellFormats(new WritableCellFormat());
+            val twoDecimalPlaces = generateWriteableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
+
+            for (final List<CellFromHtml> row : matrix) {
                 for (int colIdx = 0; colIdx < row.size(); ) {
-                    CellFromHtml cell = row.get(colIdx);
-                    Object cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
+                    val cell = row.get(colIdx);
+                    val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
                     int columnWidthChars = 0;
                     CellValue excelCell;
                     if (cellValue instanceof Double) {
@@ -163,10 +161,10 @@ public class ExcelGenerator extends DefaultHandler {
                         excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, normalFormat.get(cell.format));
                         columnWidthChars = ((String) cellValue).length();
                     } else throw new RuntimeException("Unreachable: " + cellValue.getClass());
-                    
+
                     while (maxCharsSeenInColumn.size() <= colIdx) maxCharsSeenInColumn.add(0);
                     if (columnWidthChars > maxCharsSeenInColumn.get(colIdx)) maxCharsSeenInColumn.set(colIdx, columnWidthChars);
-                    
+
                     excelSheet.addCell(excelCell);
                     excelSheet.mergeCells(colIdx, nextRowInExcel, (colIdx += cell.colspan) - 1, nextRowInExcel);
                 }

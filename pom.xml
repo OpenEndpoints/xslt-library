@@ -82,6 +82,12 @@
             <artifactId>json</artifactId>
             <version>20151123</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+            <scope>provided</scope>  <!-- only does compile-time stuff -->
+        </dependency>
     </dependencies>
 
     <build>

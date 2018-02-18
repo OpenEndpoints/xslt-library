@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.val;
 import org.w3c.dom.Element;
 
 import com.databasesandlife.util.DomParser;
@@ -17,19 +18,19 @@ public class OfferReadyDomParser extends DomParser {
     
     /** @return a PrivilegeRestriction allowing all users, if tag is missing */
     protected static @Nonnull PrivilegeRestriction parsePrivilegeRestriction(@Nonnull Element container) throws ConfigurationException {
-        List<Element> n = getSubElements(container, "privilege-restriction");
-        if (n.size() > 1) throw new ConfigurationException("Too many <privilege-restriction> elements");
-        if (n.isEmpty()) return PrivilegeRestriction.allowAny();
-        Element p = n.get(0);
+        val restrictionElements = getSubElements(container, "privilege-restriction");
+        if (restrictionElements.size() > 1) throw new ConfigurationException("Too many <privilege-restriction> elements");
+        if (restrictionElements.isEmpty()) return PrivilegeRestriction.allowAny();
+        val el = restrictionElements.get(0);
 
         PrivilegeRestriction.Type type;
-        if ("all-but".equals(p.getAttribute("type"))) type = PrivilegeRestriction.Type.AllBut;
-        else if ("none-but".equals(p.getAttribute("type"))) type = PrivilegeRestriction.Type.NoneBut;
-        else throw new ConfigurationException("<privilege-restriction>: didn't understand type='" + p.getAttribute("type") + "'");
+        if ("all-but".equals(el.getAttribute("type"))) type = PrivilegeRestriction.Type.AllBut;
+        else if ("none-but".equals(el.getAttribute("type"))) type = PrivilegeRestriction.Type.NoneBut;
+        else throw new ConfigurationException("<privilege-restriction>: didn't understand type='" + el.getAttribute("type") + "'");
 
-        Set<Privilege> privileges = new HashSet<Privilege>();
-        for (Element pp : getSubElements(p, "privilege")) {
-            String privName = pp.getAttribute("name");
+        val privileges = new HashSet<Privilege>();
+        for (val priv : getSubElements(el, "privilege")) {
+            String privName = priv.getAttribute("name");
             if (privName.equals("")) throw new ConfigurationException("Each <privilege> must have a name attribute");
             privileges.add(new Privilege(privName));
         }
