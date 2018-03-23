@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import lombok.SneakyThrows;
 import lombok.val;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +24,8 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 
 /** Parses XML which has &lt;security&gt; containing a set of &lt;secret-key&gt; elements. */
 public class SecurityParser extends DomParser {
-    
+
+    @SneakyThrows(ParserConfigurationException.class)
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
         try (val t = new Timer("parse-security-xml")) {
@@ -40,7 +42,6 @@ public class SecurityParser extends DomParser {
         }
         catch (SAXException e) { throw new ConfigurationException(e); }  // invalid XML, is a configuration problem
         catch (IOException e) { throw new ConfigurationException(e); }  // can be throws if malformed UTF-8 etc.
-        catch (ParserConfigurationException e) { throw new RuntimeException(e); }
     }
 
     public static @Nonnull String[] parse(@Nonnull File file)

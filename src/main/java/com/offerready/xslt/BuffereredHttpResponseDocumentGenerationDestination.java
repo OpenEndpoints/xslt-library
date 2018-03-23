@@ -6,6 +6,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 
 public class BuffereredHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
@@ -22,15 +23,13 @@ public class BuffereredHttpResponseDocumentGenerationDestination extends Buffere
     }
 
     @SuppressWarnings("deprecation") // There's no other way to do setStatus(code, phrase)
+    @SneakyThrows(IOException.class)
     public void deliver(@Nonnull HttpServletResponse response) {
-        try {
-            response.setStatus(statusCode, reasonPhrase);
-            response.setContentType(contentType);
-    
-            if (filenameOrNull != null) response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
-    
-            IOUtils.write(body.toByteArray(), response.getOutputStream());
-        }
-        catch (IOException e) { throw new RuntimeException(e); }
+        response.setStatus(statusCode, reasonPhrase);
+        response.setContentType(contentType);
+
+        if (filenameOrNull != null) response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
+
+        IOUtils.write(body.toByteArray(), response.getOutputStream());
     }
 }

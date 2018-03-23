@@ -18,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import jxl.Workbook;
+import jxl.demo.Write;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -32,6 +33,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.CellValue;
 import jxl.write.biff.RowsExceededException;
 
+import lombok.SneakyThrows;
 import lombok.val;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -80,14 +82,12 @@ public class ExcelGenerator extends DefaultHandler {
     Timer timer;
     
     /** @param xls is closed after transformation */
+    @SneakyThrows(IOException.class)
     public ExcelGenerator(boolean magicNumbers, @Nonnull OutputStream xls) {
-        try {
-            this.magicNumbers = magicNumbers;
-            
-            workbook = Workbook.createWorkbook(xls);
-            excelSheet = workbook.createSheet("Report", 0);
-        }
-        catch (IOException e) { throw new RuntimeException(e); }
+        this.magicNumbers = magicNumbers;
+
+        workbook = Workbook.createWorkbook(xls);
+        excelSheet = workbook.createSheet("Report", 0);
     }
     
     /** @return String or Number */
@@ -113,65 +113,61 @@ public class ExcelGenerator extends DefaultHandler {
     // If we generate a new WritableCellFormat for each cell, at some point we get the error:
     //    Warning:  Maximum number of format records exceeded.  Using default format.
     // Therefore we have to pre-generate all possible formats in advance.
+    @SneakyThrows(WriteException.class)
     protected @Nonnull Map<CellFormat, WritableCellFormat> generateWriteableCellFormats(@Nonnull WritableCellFormat base) {
-        try {
-            val bold = new WritableFont(WritableFont.createFont(base.getFont().getName()),
-                base.getFont().getPointSize(), WritableFont.BOLD);
-            
-            val result = new HashMap<CellFormat, WritableCellFormat>();
-            for (boolean isCentered : new boolean[] { true, false }) {
-                for (boolean isBold : new boolean[] { true, false }) {
-                    for (boolean hasTopBorder : new boolean[] { true, false }) {
-                        val f = new CellFormat();
-                        f.isCentered = isCentered;
-                        f.isBold = isBold;
-                        f.hasTopBorder = hasTopBorder;
+        val bold = new WritableFont(WritableFont.createFont(base.getFont().getName()),
+            base.getFont().getPointSize(), WritableFont.BOLD);
 
-                        val format = new WritableCellFormat(base);
-                        if (isCentered) format.setAlignment(Alignment.CENTRE);
-                        if (isBold) format.setFont(bold);
-                        if (hasTopBorder) format.setBorder(Border.TOP, BorderLineStyle.THIN);
-        
-                        result.put(f, format);
-                    }
+        val result = new HashMap<CellFormat, WritableCellFormat>();
+        for (boolean isCentered : new boolean[] { true, false }) {
+            for (boolean isBold : new boolean[] { true, false }) {
+                for (boolean hasTopBorder : new boolean[] { true, false }) {
+                    val f = new CellFormat();
+                    f.isCentered = isCentered;
+                    f.isBold = isBold;
+                    f.hasTopBorder = hasTopBorder;
+
+                    val format = new WritableCellFormat(base);
+                    if (isCentered) format.setAlignment(Alignment.CENTRE);
+                    if (isBold) format.setFont(bold);
+                    if (hasTopBorder) format.setBorder(Border.TOP, BorderLineStyle.THIN);
+
+                    result.put(f, format);
                 }
             }
-            return result;
         }
-        catch (WriteException e) { throw new RuntimeException(e); }
+        return result;
     }
-    
+
+    @SneakyThrows(WriteException.class)
     protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
-        try {
-            val normalFormat = generateWriteableCellFormats(new WritableCellFormat());
-            val twoDecimalPlaces = generateWriteableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
+        val normalFormat = generateWriteableCellFormats(new WritableCellFormat());
+        val twoDecimalPlaces = generateWriteableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
 
-            for (final List<CellFromHtml> row : matrix) {
-                for (int colIdx = 0; colIdx < row.size(); ) {
-                    val cell = row.get(colIdx);
-                    val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
-                    int columnWidthChars = 0;
-                    CellValue excelCell;
-                    if (cellValue instanceof Double) {
-                        Map<CellFormat, WritableCellFormat> format = normalFormat;
-                        if (cell.string.toString().matches("\\s*-?[\\d,.]*[.,]\\d{2}\\s*")) format = twoDecimalPlaces;
-                        excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format.get(cell.format));
-                        columnWidthChars = String.format("%.2f", ((Double) cellValue)).length();
-                    } else if (cellValue instanceof String) {
-                        excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, normalFormat.get(cell.format));
-                        columnWidthChars = ((String) cellValue).length();
-                    } else throw new RuntimeException("Unreachable: " + cellValue.getClass());
+        for (final List<CellFromHtml> row : matrix) {
+            for (int colIdx = 0; colIdx < row.size(); ) {
+                val cell = row.get(colIdx);
+                val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
+                int columnWidthChars = 0;
+                CellValue excelCell;
+                if (cellValue instanceof Double) {
+                    Map<CellFormat, WritableCellFormat> format = normalFormat;
+                    if (cell.string.toString().matches("\\s*-?[\\d,.]*[.,]\\d{2}\\s*")) format = twoDecimalPlaces;
+                    excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format.get(cell.format));
+                    columnWidthChars = String.format("%.2f", ((Double) cellValue)).length();
+                } else if (cellValue instanceof String) {
+                    excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, normalFormat.get(cell.format));
+                    columnWidthChars = ((String) cellValue).length();
+                } else throw new RuntimeException("Unreachable: " + cellValue.getClass());
 
-                    while (maxCharsSeenInColumn.size() <= colIdx) maxCharsSeenInColumn.add(0);
-                    if (columnWidthChars > maxCharsSeenInColumn.get(colIdx)) maxCharsSeenInColumn.set(colIdx, columnWidthChars);
+                while (maxCharsSeenInColumn.size() <= colIdx) maxCharsSeenInColumn.add(0);
+                if (columnWidthChars > maxCharsSeenInColumn.get(colIdx)) maxCharsSeenInColumn.set(colIdx, columnWidthChars);
 
-                    excelSheet.addCell(excelCell);
-                    excelSheet.mergeCells(colIdx, nextRowInExcel, (colIdx += cell.colspan) - 1, nextRowInExcel);
-                }
-                nextRowInExcel++;
+                excelSheet.addCell(excelCell);
+                excelSheet.mergeCells(colIdx, nextRowInExcel, (colIdx += cell.colspan) - 1, nextRowInExcel);
             }
+            nextRowInExcel++;
         }
-        catch (WriteException e) { throw new RuntimeException(e); }
     }
     
     @Override public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -247,13 +243,13 @@ public class ExcelGenerator extends DefaultHandler {
         }
         catch (IOException | WriteException e) { throw new SAXException(e); }
     }
-    
+
+    @SneakyThrows({ParserConfigurationException.class, IOException.class})
     public static void writeExcelBinaryFromExcelXml(boolean magicNumbers, @Nonnull OutputStream xls, @Nonnull InputStream xml) {
         try {
             ExcelGenerator handler = new ExcelGenerator(magicNumbers, xls);
             SAXParserFactory.newInstance().newSAXParser().parse(xml, handler);
         }
         catch (SAXException e) { throw new RuntimeException("Input XML to convertion to XLS process is not valid", e); }
-        catch (ParserConfigurationException | IOException e) { throw new RuntimeException(e); }
     }
 }

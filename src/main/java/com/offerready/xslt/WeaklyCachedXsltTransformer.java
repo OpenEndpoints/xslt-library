@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
+import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -89,10 +90,8 @@ public class WeaklyCachedXsltTransformer {
                 transformerFactory.setErrorListener(errorListener);
                 val templates = transformerFactory.newTemplates(new DOMSource(xslt));
                 xsltTransformerFactory = new XsltTransformerFactory() {
-                    @Override public Transformer newTransformer() {
-                        try { return templates.newTransformer(); }
-                        catch (TransformerConfigurationException e) { throw new RuntimeException(e); }
-                    }
+                    @SneakyThrows(TransformerConfigurationException.class)
+                    @Override public Transformer newTransformer() { return templates.newTransformer(); }
                 };
             }
             catch (Exception exception) {
@@ -132,17 +131,15 @@ public class WeaklyCachedXsltTransformer {
         threads.addTask(result.new CompileJob(cacheKey, nameForLogging, xslt.parseDocument()));
         return result;
     }
-    
+
     public static @Nonnull WeaklyCachedXsltTransformer getIdentityTransformer() {
         val transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
             TransformerFactoryImpl.class.getName(), DocumentGenerator.class.getClassLoader());
 
         val result = new WeaklyCachedXsltTransformer();
         result.xsltTransformerFactory = new XsltTransformerFactory() {
-            @Override public Transformer newTransformer() {
-                try { return transformerFactory.newTransformer(); }
-                catch (TransformerConfigurationException e) { throw new RuntimeException(e); }
-            }
+            @SneakyThrows(TransformerConfigurationException.class)
+            @Override public Transformer newTransformer() { return transformerFactory.newTransformer(); }
         };
         return result;
     }

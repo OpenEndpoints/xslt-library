@@ -1,5 +1,7 @@
 package com.offerready.xslt;
 
+import lombok.SneakyThrows;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -31,11 +33,9 @@ public class StreamingHttpResponseDocumentGenerationDestination implements Docum
         }
     }
 
+    @SneakyThrows(IOException.class)
     @Override public @Nonnull OutputStream getOutputStream() {
         outputStarted = true;
-        try {
-            return response.getOutputStream();
-        }
-        catch (IOException e) { throw new RuntimeException(e); }
+        return response.getOutputStream();
     }
 }

@@ -18,6 +18,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
@@ -47,6 +48,7 @@ public class PostRequestClient {
      * @param dest is not closed by this method
      * @param bodyContentType if null, GET is done instead of POST 
      */
+    @SneakyThrows(IOException.class)
     public void post(
         @Nonnull DocumentGenerationDestination dest, @Nonnull URL url, @Nonnull Map<String, String> getParameters,
         @CheckForNull String bodyContentType, @Nonnull OutputStreamFiller postBody
@@ -78,7 +80,6 @@ public class PostRequestClient {
             
             IOUtils.copy(connection.getInputStream(), dest.getOutputStream());
         }
-        catch (IOException e) { throw new RuntimeException(e); }
     }
 
     /** 
@@ -89,17 +90,15 @@ public class PostRequestClient {
         @Nonnull DocumentGenerationDestination dest, @Nonnull URL url, @Nonnull Map<String, String> getParameters, @CheckForNull Element xmlOrNull
     ) throws PostFailedException {
         post(dest, url, getParameters, xmlOrNull == null ? null : "text/xml", new OutputStreamFiller() {
+            @SneakyThrows(TransformerException.class)
             public void writeToOutputStream(OutputStream o) {
-                try {
-                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-                    DOMSource source = new DOMSource(xmlOrNull);
-                    
-                    StreamResult result = new StreamResult(o);
-                    transformer.transform(source, result);
-                }
-                catch (TransformerException e) { throw new RuntimeException(e); }
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+                DOMSource source = new DOMSource(xmlOrNull);
+
+                StreamResult result = new StreamResult(o);
+                transformer.transform(source, result);
             }
         });
     }

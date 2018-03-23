@@ -1,5 +1,7 @@
 package com.offerready.xslt;
 
+import lombok.SneakyThrows;
+
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -20,11 +22,9 @@ public class StringDocumentDestination extends BufferedDocumentGenerationDestina
     }
     
     @Override
+    @SneakyThrows(UnsupportedEncodingException.class)
     public String toString() {
-        try {
-            assertValid();
-            return body.toString(StandardCharsets.UTF_8.name());
-        }
-        catch (UnsupportedEncodingException e) { throw new RuntimeException(e); }
+        assertValid();
+        return body.toString(StandardCharsets.UTF_8.name());
     }
 }
