@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -137,7 +138,7 @@ public class DocumentGenerator {
             response.setContentType("text/plain; charset=UTF-8");
             val transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             val source = new DOMSource(xml);
             val result = new StreamResult(response.getOutputStream());
@@ -202,7 +203,7 @@ public class DocumentGenerator {
                     try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
                     val json = XML.toJSONObject(xmlOutput.toString());
                     val outputStream = response.getOutputStream();
-                    outputStream.write(json.toString(2).getBytes(Charset.forName("UTF-8")));
+                    outputStream.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
                     outputStream.close();
                     break;
                     
@@ -225,7 +226,7 @@ public class DocumentGenerator {
                 default:
                     response.setContentType((defn.contentType == null ? "text/plain" : defn.contentType) + "; charset=UTF-8");
                     val result = new StreamResult(response.getOutputStream());
-                    xslt.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                    xslt.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
                     try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
                     break;
             }

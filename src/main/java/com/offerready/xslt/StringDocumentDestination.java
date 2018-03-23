@@ -2,6 +2,7 @@ package com.offerready.xslt;
 
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class StringDocumentDestination extends BufferedDocumentGenerationDestination {
@@ -22,7 +23,7 @@ public class StringDocumentDestination extends BufferedDocumentGenerationDestina
     public String toString() {
         try {
             assertValid();
-            return body.toString("UTF-8");
+            return body.toString(StandardCharsets.UTF_8.name());
         }
         catch (UnsupportedEncodingException e) { throw new RuntimeException(e); }
     }
