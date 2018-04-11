@@ -8,11 +8,11 @@ import java.io.OutputStream;
 public abstract class BufferedDocumentGenerationDestination implements DocumentGenerationDestination {
 
     protected String contentType;
-    protected @CheckForNull String filenameOrNull;
-    protected final ByteArrayOutputStream body = new ByteArrayOutputStream();
+    protected @CheckForNull String filenameOrNull = null;
+    protected ByteArrayOutputStream body = null;
 
     @Override public void setContentType(@Nonnull String contentType) { this.contentType = contentType; }
     @Override public void setContentDispositionToDownload(@CheckForNull String filename) { this.filenameOrNull = filename; }
-    @Override public @Nonnull OutputStream getOutputStream() { return body; }
+    @Override public @Nonnull OutputStream getOutputStream() { return body = new ByteArrayOutputStream(); }
     
 }
