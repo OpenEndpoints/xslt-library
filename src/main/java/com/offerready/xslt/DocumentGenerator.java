@@ -27,6 +27,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 
+import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.fop.apps.FOPException;
@@ -80,11 +81,14 @@ public class DocumentGenerator {
         public StyleVisionXslt(@Nonnull File x) { xsltFile = x; }
         @Override public @Nonnull String calculateCacheKey() { return MD5Hex.md5(xsltFile); }
 
-        @SneakyThrows({SAXException.class, ParserConfigurationException.class, IOException.class})
-        @Override public @Nonnull Document parseDocument() {
+        @SneakyThrows({ParserConfigurationException.class, IOException.class})
+        @Override public @Nonnull Document parseDocument() throws ConfigurationException {
             val builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setNamespaceAware(true);
-            val result = builderFactory.newDocumentBuilder().parse(xsltFile); // DOM object
+
+            final Document result;
+            try { result = builderFactory.newDocumentBuilder().parse(xsltFile); } // DOM Object
+            catch (SAXException e) { throw new ConfigurationException("XSLT file '" + xsltFile.getAbsolutePath() + "' is not valid XML"); }
 
             // XSLT files produced by Stylevision have <xsl:import-schema schema-location="profile-report.xsd"/>
             // The free version of Saxon throws if this tag is present (tells one to buy the commercial version)
@@ -111,7 +115,8 @@ public class DocumentGenerator {
         }
     }
     
-    public DocumentGenerator(@Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn) {
+    public DocumentGenerator(@Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn)
+    throws ConfigurationException {
         this.defn = defn;
         if (defn.xsltFileOrNull == null)
             this.transformer = WeaklyCachedXsltTransformer.getIdentityTransformer();

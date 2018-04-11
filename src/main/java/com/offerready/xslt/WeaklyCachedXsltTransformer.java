@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
+import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.log4j.Logger;
@@ -23,6 +24,7 @@ import com.databasesandlife.util.ThreadPool;
 import com.databasesandlife.util.Timer;
 
 import net.sf.saxon.TransformerFactoryImpl;
+import org.xml.sax.SAXException;
 
 /**
  * Wraps an XSLT {@link Templates} capable of performing an XSLT transformation.
@@ -50,8 +52,16 @@ public class WeaklyCachedXsltTransformer {
     }
     
     public interface Xslt {
-        /** For example md5 of xslt; globally unique across the world's XSLTs */ public String calculateCacheKey();
-        /** xslt xml */ public Document parseDocument();
+        /**
+         * @return For example md5 of xslt; globally unique across the world's XSLTs
+         */
+        String calculateCacheKey();
+
+        /**
+         * @return The XSLT file
+         * @throws ConfigurationException if the XSLT file cannot be parsed
+         */
+        Document parseDocument() throws ConfigurationException;
     }
     
     /**
@@ -116,7 +126,7 @@ public class WeaklyCachedXsltTransformer {
     
     public synchronized static @Nonnull WeaklyCachedXsltTransformer getTransformerOrScheduleCompilation(
         @Nonnull XsltCompilationThreads threads, @Nonnull String nameForLogging, @Nonnull Xslt xslt
-    ) {
+    ) throws ConfigurationException {
         val cacheKey = xslt.calculateCacheKey();
 
         val ref = cache.get(cacheKey);
