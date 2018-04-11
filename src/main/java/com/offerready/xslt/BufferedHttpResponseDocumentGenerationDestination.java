@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 
-public class BuffereredHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
+public class BufferedHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
     
     protected int statusCode = HttpServletResponse.SC_OK;
     protected @Nonnull String reasonPhrase = "OK";
