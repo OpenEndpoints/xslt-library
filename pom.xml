@@ -73,6 +73,11 @@
             <version>0.95</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.avalon.framework</groupId> <!-- needed by FOP -->
+            <artifactId>avalon-framework-impl</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>net.sourceforge.jexcelapi</groupId>
             <artifactId>jxl</artifactId>
             <version>2.6.12</version>
