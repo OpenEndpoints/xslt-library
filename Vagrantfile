@@ -30,6 +30,7 @@ Vagrant.configure(2) do |config|
 
     echo --- Build software
     mvn -f /vagrant/pom.xml clean package
+    echo 'mvn -f /vagrant/pom.xml clean package' >> ~vagrant/.bash_history
   }
   
   config.vm.provision "shell", run: "always", inline: %q{
