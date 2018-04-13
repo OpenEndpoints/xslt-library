@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.databasesandlife</groupId>
             <artifactId>java-common</artifactId>
-            <version>4.2.0</version>
+            <version>4.11.1</version>
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>

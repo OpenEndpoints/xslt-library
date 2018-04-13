@@ -7,11 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,11 +21,10 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 /** Parses XML which has &lt;security&gt; containing a set of &lt;secret-key&gt; elements. */
 public class SecurityParser extends DomParser {
 
-    @SneakyThrows(ParserConfigurationException.class)
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
         try (val t = new Timer("parse-security-xml")) {
-            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(i);
+            val doc = DomParser.newDocumentBuilder().parse(i);
 
             val root = doc.getDocumentElement();
             if ( ! root.getNodeName().equals("security")) throw new ConfigurationException("Root node must be <security>");

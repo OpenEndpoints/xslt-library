@@ -12,8 +12,6 @@ import java.util.Properties;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -27,6 +25,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 
+import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -81,13 +80,10 @@ public class DocumentGenerator {
         public StyleVisionXslt(@Nonnull File x) { xsltFile = x; }
         @Override public @Nonnull String calculateCacheKey() { return MD5Hex.md5(xsltFile); }
 
-        @SneakyThrows({ParserConfigurationException.class, IOException.class})
+        @SneakyThrows(IOException.class)
         @Override public @Nonnull Document parseDocument() throws ConfigurationException {
-            val builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setNamespaceAware(true);
-
             final Document result;
-            try { result = builderFactory.newDocumentBuilder().parse(xsltFile); } // DOM Object
+            try { result = DomParser.newDocumentBuilder().parse(xsltFile); } // DOM Object
             catch (SAXException e) { throw new ConfigurationException("XSLT file '" + xsltFile.getAbsolutePath() + "' is not valid XML"); }
 
             // XSLT files produced by Stylevision have <xsl:import-schema schema-location="profile-report.xsd"/>
