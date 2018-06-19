@@ -21,6 +21,7 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 /** Parses XML which has &lt;security&gt; containing a set of &lt;secret-key&gt; elements. */
 public class SecurityParser extends DomParser {
 
+    /** @return not empty */
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
         try (val t = new Timer("parse-security-xml")) {
@@ -33,12 +34,14 @@ public class SecurityParser extends DomParser {
             
             val result = new ArrayList<String>();
             for (Element e : getSubElements(root, "secret-key")) result.add(e.getTextContent());
+            if (result.isEmpty()) throw new ConfigurationException("At least one <secret-key> must be present");
             return result.toArray(new String[0]);
         }
         catch (SAXException e) { throw new ConfigurationException(e); }  // invalid XML, is a configuration problem
         catch (IOException e) { throw new ConfigurationException(e); }  // can be throws if malformed UTF-8 etc.
     }
 
+    /** @return not empty */
     public static @Nonnull String[] parse(@Nonnull File file)
     throws ConfigurationException {
         try {
