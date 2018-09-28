@@ -8,22 +8,22 @@ import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 
 public class BufferedHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
 
     protected @Getter int statusCode = HttpServletResponse.SC_OK;
-    protected @Getter @Nonnull String reasonPhrase = "OK";
+    protected @CheckForNull String reasonPhrase = null;
     protected @CheckForNull URL redirectUrl = null;
 
+    public void setStatusCode(int code) { statusCode = code; reasonPhrase = null; }
     public void setStatusCode(int code, @Nonnull String phrase) { statusCode = code; reasonPhrase = phrase; }
 
     public void setRedirectUrl(@Nonnull URL redirectUrl) {
         this.redirectUrl = redirectUrl;
         this.statusCode = HttpServletResponse.SC_MOVED_PERMANENTLY;
-        this.reasonPhrase = "Moved Permanently";
+        this.reasonPhrase = null;
     }
 
     @Override
@@ -40,15 +40,16 @@ public class BufferedHttpResponseDocumentGenerationDestination extends BufferedD
             return;
         }
 
-        if (body == null) {
-            response.sendError(statusCode, reasonPhrase);
-            return;
-        }
+        if (reasonPhrase == null) response.sendError(statusCode);
+        else response.sendError(statusCode, reasonPhrase);
 
-        response.setStatus(statusCode, reasonPhrase);
+        if (body == null) return;
+
         response.setContentType(contentType);
 
-        if (filenameOrNull != null) response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
+        if (filenameOrNull != null) {
+            response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
+        }
 
         IOUtils.write(body.toByteArray(), response.getOutputStream());
     }
