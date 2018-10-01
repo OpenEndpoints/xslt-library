@@ -2,8 +2,8 @@ package com.offerready.xslt;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
+import com.offerready.xslt.ExcelGenerator.InputDecimalSeparator;
 import lombok.val;
 import org.w3c.dom.Element;
 
@@ -74,14 +74,20 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :
             getSubElements(outputDefnElement, "convert-output-xml-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :  // deprecated
             getSubElements(outputDefnElement, "convert-output-xsl-fo-to-pdf").size() > 0 ? OutputConversion.xslFoToPdf :
-            getSubElements(outputDefnElement, "convert-output-xml-to-excel").size()  > 0 ? 
-                ( Boolean.parseBoolean(getOptionalAttribute(getMandatorySingleSubElement(outputDefnElement, "convert-output-xml-to-excel"), "magic-numbers")) ? 
-                    OutputConversion.excelXmlToExcelBinaryMagicNumbers : OutputConversion.excelXmlToExcelBinary ) :
+            getSubElements(outputDefnElement, "convert-output-xml-to-excel").size()  > 0 ? OutputConversion.excelXmlToExcelBinary :
             OutputConversion.none;
         result.contentType = contentType;
+
+        val excel = getOptionalSingleSubElement(outputDefnElement, "convert-output-xml-to-excel");
+        if (excel != null) {
+            // Deprecated, use input-decimal-separator attribute instead
+            if (Boolean.parseBoolean(getOptionalAttribute(excel, "magic-numbers", "false")))
+                result.inputDecimalSeparator = InputDecimalSeparator.magic;
+
+            val style = getOptionalAttribute(excel, "input-decimal-separator");
+            if (style != null) result.inputDecimalSeparator = InputDecimalSeparator.valueOf(style);
+        }
 
         return result;
     }
 }
-
-

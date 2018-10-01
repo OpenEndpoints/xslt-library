@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -37,6 +38,50 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.databasesandlife.util.Timer;
 
 public class ExcelGenerator extends DefaultHandler {
+
+    @SuppressWarnings("unused") // referenced via valueOf(..) from config file parser
+    public enum InputDecimalSeparator {
+        dot {
+            public @CheckForNull Double tryParseNumber(@Nonnull String str) {
+                try { return new Double(str.replace(",","")); }
+                catch (NumberFormatException ignored) { return null; }
+            }
+            public int determineDecimalPlaces(@Nonnull String string) {
+                if (string.contains(".")) return string.trim().length() - string.trim().lastIndexOf(".") - 1;
+                else return 0;
+            }
+        },
+        comma {
+            public @CheckForNull Double tryParseNumber(@Nonnull String str) {
+                try { return new Double(str.replace(".", "").replace(",", ".")); }
+                catch (NumberFormatException ignored) { return null; }
+            }
+            public int determineDecimalPlaces(@Nonnull String string) {
+                if (string.contains(",")) return string.trim().length() - string.trim().lastIndexOf(",") - 1;
+                else return 0;
+            }
+        },
+        magic {
+            public @CheckForNull Double tryParseNumber(@Nonnull String str) {
+                Matcher matcherDecimal = Pattern.compile("(-?[\\d,.]+)[,.](\\d{2})").matcher(str);
+                if (matcherDecimal.matches())
+                    try { return new Double(matcherDecimal.group(1).replace(".", "").replace(",", "") + "." + matcherDecimal.group(2)); }
+                    catch (NumberFormatException ignored) { }
+
+                Matcher matcherInteger = Pattern.compile("(-?[\\d,.]+)").matcher(str);
+                if (matcherInteger.matches())
+                    try { return new Double(matcherInteger.group(1).replace(".", "").replace(",", "")); }
+                    catch (NumberFormatException ignored) { }
+
+                return null;
+            }
+            public int determineDecimalPlaces(@Nonnull String string) {
+                return (string.matches("\\s*-?[\\d,.]*[.,]\\d{2}\\s*")) ? 2 : 0;
+            }
+        };
+        public abstract @CheckForNull Double tryParseNumber(@Nonnull String potentialNumber);
+        public abstract int determineDecimalPlaces(@Nonnull String string);
+    }
     
     protected static class CellFormat {
         public boolean isCentered = false, isBold = false, hasTopBorder = false;
@@ -59,7 +104,7 @@ public class ExcelGenerator extends DefaultHandler {
     }
     
     // Configuration
-    protected boolean magicNumbers;
+    protected @Nonnull InputDecimalSeparator inputDecimalSeparator;
     
     // Connection to Excel
     protected @Nonnull WritableWorkbook workbook;
@@ -78,30 +123,18 @@ public class ExcelGenerator extends DefaultHandler {
     
     /** @param xls is closed after transformation */
     @SneakyThrows(IOException.class)
-    public ExcelGenerator(boolean magicNumbers, @Nonnull OutputStream xls) {
-        this.magicNumbers = magicNumbers;
+    public ExcelGenerator(@Nonnull InputDecimalSeparator inputDecimalSeparator, @Nonnull OutputStream xls) {
+        this.inputDecimalSeparator = inputDecimalSeparator;
 
         workbook = Workbook.createWorkbook(xls);
         excelSheet = workbook.createSheet("Report", 0);
     }
     
-    /** @return String or Number */
+    /** @return String or Double */
     protected @Nonnull Object parseString(@Nonnull String str) {
-        try { return new Double(str); }
-        catch (NumberFormatException e) { }
-        
-        if (magicNumbers) {
-            Matcher matcherDecimal = Pattern.compile("(-?[\\d,.]+)[,.](\\d{2})").matcher(str);
-            if (matcherDecimal.matches()) 
-                try { return new Double(matcherDecimal.group(1).replace(".", "").replace(",", "") + "." + matcherDecimal.group(2)); }
-                catch (NumberFormatException e) { } 
+        val numberOrNull = inputDecimalSeparator.tryParseNumber(str);
+        if (numberOrNull != null) return numberOrNull;
 
-            Matcher matcherInteger = Pattern.compile("(-?[\\d,.]+)").matcher(str);
-            if (matcherInteger.matches()) 
-                try { return new Double(matcherInteger.group(1).replace(".", "").replace(",", "")); }
-                catch (NumberFormatException e) { } 
-        }
-        
         return str.trim();
     }
     
@@ -137,7 +170,7 @@ public class ExcelGenerator extends DefaultHandler {
     @SneakyThrows(WriteException.class)
     protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
         val normalFormat = generateWritableCellFormats(new WritableCellFormat());
-        val twoDecimalPlaces = generateWritableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
+        val numberFormats = new HashMap<Integer, Map<CellFormat, WritableCellFormat>>();
 
         for (final List<CellFromHtml> row : matrix) {
             int colIdx = 0;
@@ -146,8 +179,15 @@ public class ExcelGenerator extends DefaultHandler {
                 int columnWidthChars = 0;
                 CellValue excelCell;
                 if (cellValue instanceof Double) {
-                    Map<CellFormat, WritableCellFormat> format = normalFormat;
-                    if (cell.string.toString().matches("\\s*-?[\\d,.]*[.,]\\d{2}\\s*")) format = twoDecimalPlaces;
+                    int decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
+                    val format = numberFormats.computeIfAbsent(decimalPlaces, (d) -> {
+                        StringBuilder f = new StringBuilder("#,##0");
+                        if (d > 0) {
+                            f.append(".");
+                            for (int i = 0; i < d; i++) f.append("0");
+                        }
+                        return generateWritableCellFormats(new WritableCellFormat(new NumberFormat(f.toString())));
+                    });
                     excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format.get(cell.format));
                     columnWidthChars = String.format("%.2f", ((Double) cellValue)).length();
                 } else if (cellValue instanceof String) {
@@ -240,11 +280,11 @@ public class ExcelGenerator extends DefaultHandler {
     }
 
     @SneakyThrows({ParserConfigurationException.class, IOException.class})
-    public static void writeExcelBinaryFromExcelXml(boolean magicNumbers, @Nonnull OutputStream xls, @Nonnull InputStream xml) {
+    public static void writeExcelBinaryFromExcelXml(@Nonnull InputDecimalSeparator inputDecimalSeparator, @Nonnull OutputStream xls, @Nonnull InputStream xml) {
         try {
-            ExcelGenerator handler = new ExcelGenerator(magicNumbers, xls);
+            ExcelGenerator handler = new ExcelGenerator(inputDecimalSeparator, xls);
             SAXParserFactory.newInstance().newSAXParser().parse(xml, handler);
         }
-        catch (SAXException e) { throw new RuntimeException("Input XML to convertion to XLS process is not valid", e); }
+        catch (SAXException e) { throw new RuntimeException("Input XML to conversion to XLS process is not valid", e); }
     }
 }

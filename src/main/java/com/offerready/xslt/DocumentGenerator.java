@@ -4,19 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
@@ -29,22 +21,15 @@ import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.apache.fop.apps.FOPException;
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.json.JSONObject;
 import org.json.XML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.databasesandlife.util.MD5Hex;
 import com.databasesandlife.util.Timer;
-import com.offerready.xslt.DocumentOutputDefinition.OutputConversion;
 import com.offerready.xslt.WeaklyCachedXsltTransformer.DocumentTemplateInvalidException;
 import com.offerready.xslt.WeaklyCachedXsltTransformer.Xslt;
 import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
@@ -216,11 +201,9 @@ public class DocumentGenerator {
                 break;
 
             case excelXmlToExcelBinary:
-            case excelXmlToExcelBinaryMagicNumbers:
                 response.setContentType(defn.contentType == null ? "application/ms-excel" : defn.contentType);
-                boolean magicNumbers = defn.outputConversion == OutputConversion.excelXmlToExcelBinaryMagicNumbers;
                 try (val outputStream = response.getOutputStream()) {
-                    xslt.transform(new DOMSource(xml), new SAXResult(new ExcelGenerator(magicNumbers, outputStream)));
+                    xslt.transform(new DOMSource(xml), new SAXResult(new ExcelGenerator(defn.inputDecimalSeparator, outputStream)));
                 }
                 break;
 
