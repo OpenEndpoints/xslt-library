@@ -114,7 +114,7 @@ public class ExcelGenerator extends DefaultHandler {
     //    Warning:  Maximum number of format records exceeded.  Using default format.
     // Therefore we have to pre-generate all possible formats in advance.
     @SneakyThrows(WriteException.class)
-    protected @Nonnull Map<CellFormat, WritableCellFormat> generateWriteableCellFormats(@Nonnull WritableCellFormat base) {
+    protected @Nonnull Map<CellFormat, WritableCellFormat> generateWritableCellFormats(@Nonnull WritableCellFormat base) {
         val bold = new WritableFont(WritableFont.createFont(base.getFont().getName()),
             base.getFont().getPointSize(), WritableFont.BOLD);
 
@@ -141,8 +141,8 @@ public class ExcelGenerator extends DefaultHandler {
 
     @SneakyThrows(WriteException.class)
     protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
-        val normalFormat = generateWriteableCellFormats(new WritableCellFormat());
-        val twoDecimalPlaces = generateWriteableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
+        val normalFormat = generateWritableCellFormats(new WritableCellFormat());
+        val twoDecimalPlaces = generateWritableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
 
         for (final List<CellFromHtml> row : matrix) {
             for (int colIdx = 0; colIdx < row.size(); ) {
