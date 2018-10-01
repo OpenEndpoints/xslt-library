@@ -1,7 +1,5 @@
 package com.offerready.xslt;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,13 +10,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import jxl.Workbook;
-import jxl.demo.Write;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -31,7 +27,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.CellValue;
-import jxl.write.biff.RowsExceededException;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -145,8 +140,8 @@ public class ExcelGenerator extends DefaultHandler {
         val twoDecimalPlaces = generateWritableCellFormats(new WritableCellFormat(new NumberFormat("#,##0.00")));
 
         for (final List<CellFromHtml> row : matrix) {
-            for (int colIdx = 0; colIdx < row.size(); ) {
-                val cell = row.get(colIdx);
+            int colIdx = 0;
+            for (val cell : row) {
                 val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
                 int columnWidthChars = 0;
                 CellValue excelCell;
