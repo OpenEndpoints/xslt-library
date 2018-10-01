@@ -195,37 +195,43 @@ public class DocumentGenerator {
         for (val placeholderValue : defn.placeholderValues.entrySet())
             xslt.setParameter(placeholderValue.getKey(), placeholderValue.getValue());
 
-        try (val outputStream = response.getOutputStream()) {
-            switch (defn.outputConversion) {
-                case xmlToJson:
-                    response.setContentType((defn.contentType == null ? "application/json" : defn.contentType) + "; charset=UTF-8");
-                    val xmlOutput = new StringWriter();
-                    try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
-                    val json = XML.toJSONObject(xmlOutput.toString());
+        switch (defn.outputConversion) {
+            case xmlToJson:
+                response.setContentType((defn.contentType == null ? "application/json" : defn.contentType) + "; charset=UTF-8");
+                val xmlOutput = new StringWriter();
+                try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
+                val json = XML.toJSONObject(xmlOutput.toString());
+                try (val outputStream = response.getOutputStream()) {
                     outputStream.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
-                    break;
+                }
+                break;
 
-                case xslFoToPdf:
-                    response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
-                    val xslFo = new DOMResult();
-                    try (val t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
+            case xslFoToPdf:
+                response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
+                val xslFo = new DOMResult();
+                try (val t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
+                try (val outputStream = response.getOutputStream()) {
                     writePdfFromXslFo(outputStream, (Document) xslFo.getNode(), uriResolverOrNull);
-                    break;
+                }
+                break;
 
-                case excelXmlToExcelBinary:
-                case excelXmlToExcelBinaryMagicNumbers:
-                    response.setContentType(defn.contentType == null ? "application/ms-excel" : defn.contentType);
-                    boolean magicNumbers = defn.outputConversion == OutputConversion.excelXmlToExcelBinaryMagicNumbers;
+            case excelXmlToExcelBinary:
+            case excelXmlToExcelBinaryMagicNumbers:
+                response.setContentType(defn.contentType == null ? "application/ms-excel" : defn.contentType);
+                boolean magicNumbers = defn.outputConversion == OutputConversion.excelXmlToExcelBinaryMagicNumbers;
+                try (val outputStream = response.getOutputStream()) {
                     xslt.transform(new DOMSource(xml), new SAXResult(new ExcelGenerator(magicNumbers, outputStream)));
-                    break;
+                }
+                break;
 
-                default:
-                    response.setContentType((defn.contentType == null ? "text/plain" : defn.contentType) + "; charset=UTF-8");
+            default:
+                response.setContentType((defn.contentType == null ? "text/plain" : defn.contentType) + "; charset=UTF-8");
+                try (val outputStream = response.getOutputStream()) {
                     val result = new StreamResult(outputStream);
                     xslt.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
                     try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
-                    break;
-            }
+                }
+                break;
         }
     }
 }
