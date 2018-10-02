@@ -51,11 +51,13 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
   * "comma". Decimal separator is ",", thousand separator (ignored) is ".".
   * "magic". Numbers may use either dot or comma as thousand or decimal separator. Heuristics are used to determine which system is in use. (This is useful in very broken input documents that use dot for some numbers and comma for others, within the same document.) The numbers must either have zero decimal (e.g. "1,024") or two decimal places (e.g. "12,34"). Any other number of decimal places in the input data will lead to wrong results. 
 * The number of decimal places in the HTML input (e.g. 2 decimal places) are taken over the to Excel cell formatting. 
-* To force the cell to be treated as text, use the attribute `<td excel-type="text">`.
+* To force the cell to be an Excel text cell (as opposed to potentially a number cell, depending on if content of the HTML table cell look like a number or not), use the attribute `<td excel-type="text">`.
 * The colspan attribute, e.g. `<td colspan="2">`, is respected. 
-* Any `<td>` which has `style="text-align: center"` is centered in the XLS cell. 
-* Any `<td>` which has `style="font-weight: bold"` is bold. 
-* Any `<td>` which has `style="border-top:"` has a border at the top of the XLS cell.
+* The following style elements of `<td>` are respected:
+  * `style="text-align: center"` (only center is supported, not right)
+  * `style="font-weight: bold"`
+  * `style="border-top:"` (only top border is supported)
+  * `style="color: x"` where `x` can be `green`, `red`, `orange`.
 * `<thead>`, `<tfoot>` and `<tbody>` may be present and are respected. (Elements in `<tfoot>` sections will appear at the bottom of the Excel file, no matter what order the tags come in in the HTML.) 
 * Column widths are determined by the lengths of text within each column. 
 * Any `<table>` which appears inside a `<td>` is ignored (i.e. tables may be nested in the HTML, only the outermost table is present in the resulting Excel file.) 

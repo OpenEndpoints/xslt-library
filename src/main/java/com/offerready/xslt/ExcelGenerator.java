@@ -15,20 +15,19 @@ import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jxl.Workbook;
+import jxl.biff.DisplayFormat;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
-import jxl.write.Label;
+import jxl.format.Colour;
+import jxl.write.*;
 import jxl.write.Number;
-import jxl.write.NumberFormat;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
 import jxl.write.biff.CellValue;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.xml.sax.Attributes;
@@ -82,17 +81,51 @@ public class ExcelGenerator extends DefaultHandler {
         public abstract @CheckForNull Double tryParseNumber(@Nonnull String potentialNumber);
         public abstract int determineDecimalPlaces(@Nonnull String string);
     }
-    
+
+    // Cannot use the underlying Colour directly as it has no equals/hashcode methods
+    @SuppressWarnings("unused") // referenced via valueOf(..) from config file parser
+    public enum Color {
+        green {
+            public Colour toExcelColour() { return Colour.GREEN; }
+        },
+        red {
+            public Colour toExcelColour() { return Colour.RED; }
+        },
+        orange {
+            public Colour toExcelColour() { return Colour.ORANGE; }
+        };
+        public abstract Colour toExcelColour();
+    }
+
+    @EqualsAndHashCode
     protected static class CellFormat {
-        public boolean isCentered = false, isBold = false, hasTopBorder = false;
-        @Override public int hashCode() { return (isBold ? 345 : 654) 
-            * (isCentered ? 2343 : 456436) * (hasTopBorder ? 3453 : 45645); }
-        @Override public boolean equals(Object other) {
-            if ( ! (other instanceof CellFormat)) return false;
-            if (((CellFormat)other).isCentered != isCentered) return false;
-            if (((CellFormat)other).isBold != isBold) return false;
-            if (((CellFormat)other).hasTopBorder != hasTopBorder) return false;
-            return true;
+        public boolean isCentered = false;
+        public boolean isBold = false;
+        public boolean hasTopBorder = false;
+        public @CheckForNull Color color = null;
+    }
+
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE") // @EqualsAndHashCode checks format for being null
+    @EqualsAndHashCode @AllArgsConstructor
+    protected static class CellAndNumberFormat {
+        public final @Nonnull CellFormat format;
+        public final @CheckForNull String numberFormat;
+
+        @SneakyThrows(WriteException.class)
+        public @Nonnull WritableCellFormat newFormat() {
+            final WritableCellFormat result;
+            if (numberFormat != null) result = new WritableCellFormat(new NumberFormat(numberFormat));
+            else result = new WritableCellFormat();
+
+            if (format.isCentered) result.setAlignment(Alignment.CENTRE);
+            if (format.hasTopBorder) result.setBorder(Border.TOP, BorderLineStyle.THIN);
+
+            val font = new WritableFont(WritableFont.createFont(result.getFont().getName()), result.getFont().getPointSize());
+            if (format.isBold) font.setBoldStyle(WritableFont.BOLD);
+            if (format.color != null) font.setColour(format.color.toExcelColour());
+            result.setFont(font);
+
+            return result;
         }
     }
     
@@ -109,7 +142,7 @@ public class ExcelGenerator extends DefaultHandler {
     // Connection to Excel
     protected @Nonnull WritableWorkbook workbook;
     protected @Nonnull WritableSheet excelSheet;
-    
+
     // Intermediate store of values
     protected int nextRowInExcel = 0;
     protected @Nonnull List<Integer> maxCharsSeenInColumn = new ArrayList<Integer>();
@@ -137,42 +170,24 @@ public class ExcelGenerator extends DefaultHandler {
 
         return str.trim();
     }
-    
-    // If we generate a new WritableCellFormat for each cell, at some point we get the error:
-    //    Warning:  Maximum number of format records exceeded.  Using default format.
-    // Therefore we have to pre-generate all possible formats in advance.
-    @SneakyThrows(WriteException.class)
-    protected @Nonnull Map<CellFormat, WritableCellFormat> generateWritableCellFormats(@Nonnull WritableCellFormat base) {
-        val bold = new WritableFont(WritableFont.createFont(base.getFont().getName()),
-            base.getFont().getPointSize(), WritableFont.BOLD);
 
-        val result = new HashMap<CellFormat, WritableCellFormat>();
-        for (boolean isCentered : new boolean[] { true, false }) {
-            for (boolean isBold : new boolean[] { true, false }) {
-                for (boolean hasTopBorder : new boolean[] { true, false }) {
-                    val f = new CellFormat();
-                    f.isCentered = isCentered;
-                    f.isBold = isBold;
-                    f.hasTopBorder = hasTopBorder;
-
-                    val format = new WritableCellFormat(base);
-                    if (isCentered) format.setAlignment(Alignment.CENTRE);
-                    if (isBold) format.setFont(bold);
-                    if (hasTopBorder) format.setBorder(Border.TOP, BorderLineStyle.THIN);
-
-                    result.put(f, format);
-                }
-            }
+    protected @Nonnull String getNumberFormat(int decimalPlaces) {
+        StringBuilder f = new StringBuilder("#,##0");
+        if (decimalPlaces > 0) {
+            f.append(".");
+            for (int i = 0; i < decimalPlaces; i++) f.append("0");
         }
-        return result;
+        return f.toString();
     }
 
     @SneakyThrows(WriteException.class)
     protected void writeMatrixToExcel(@Nonnull List<List<CellFromHtml>> matrix) {
-        val normalFormat = generateWritableCellFormats(new WritableCellFormat());
-        val numberFormats = new HashMap<Integer, Map<CellFormat, WritableCellFormat>>();
+        // If we generate a new WritableCellFormat for each cell, at some point we get the error:
+        //    Warning:  Maximum number of format records exceeded.  Using default format.
+        // Therefore, cache them
+        val formats = new HashMap<CellAndNumberFormat, WritableCellFormat>();
 
-        for (final List<CellFromHtml> row : matrix) {
+        for (val row : matrix) {
             int colIdx = 0;
             for (val cell : row) {
                 val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
@@ -180,20 +195,18 @@ public class ExcelGenerator extends DefaultHandler {
                 CellValue excelCell;
                 if (cellValue instanceof Double) {
                     int decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
-                    val format = numberFormats.computeIfAbsent(decimalPlaces, (d) -> {
-                        StringBuilder f = new StringBuilder("#,##0");
-                        if (d > 0) {
-                            f.append(".");
-                            for (int i = 0; i < d; i++) f.append("0");
-                        }
-                        return generateWritableCellFormats(new WritableCellFormat(new NumberFormat(f.toString())));
-                    });
-                    excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format.get(cell.format));
-                    columnWidthChars = String.format("%.2f", ((Double) cellValue)).length();
+                    val cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
+                    val format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
+                    excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format);
+                    columnWidthChars = String.format("%."+decimalPlaces+"f", ((Double) cellValue)).length();
                 } else if (cellValue instanceof String) {
-                    excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, normalFormat.get(cell.format));
+                    val cellAndNumberFormat = new CellAndNumberFormat(cell.format, null);
+                    val format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
+                    excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, format);
                     columnWidthChars = ((String) cellValue).length();
-                } else throw new RuntimeException("Unreachable: " + cellValue.getClass());
+                } else {
+                    throw new RuntimeException("Unreachable: " + cellValue.getClass());
+                }
 
                 while (maxCharsSeenInColumn.size() <= colIdx) maxCharsSeenInColumn.add(0);
                 if (columnWidthChars > maxCharsSeenInColumn.get(colIdx)) maxCharsSeenInColumn.set(colIdx, columnWidthChars);
@@ -223,9 +236,17 @@ public class ExcelGenerator extends DefaultHandler {
             String colspan = attributes.getValue("colspan");
             if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
             String style = attributes.getValue("style");
-            if (style != null && style.matches(".*text-align:\\s*center.*")) currentCell.format.isCentered = true;
-            if (style != null && style.matches(".*font-weight:\\s*bold.*")) currentCell.format.isBold = true;
-            if (style != null && style.matches(".*border-top:.*")) currentCell.format.hasTopBorder = true;
+            if (style != null) {
+                currentCell.format.isCentered = style.matches(".*text-align:\\s*center.*");
+                currentCell.format.isBold = style.matches(".*font-weight:\\s*bold.*");
+                currentCell.format.hasTopBorder = style.contains("border-top:");
+
+                Matcher colorMatcher = Pattern.compile("color:\\s*(\\w+)").matcher(style);
+                if (colorMatcher.find()) {
+                    try { currentCell.format.color = Color.valueOf(colorMatcher.group(1)); }
+                    catch (IllegalArgumentException ignored) { } // if user writes "color:purple", just ignore it
+                }
+            }
             if ("text".equals(attributes.getValue("excel-type"))) currentCell.forceText = true;
         }
     }
