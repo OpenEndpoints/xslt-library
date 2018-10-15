@@ -40,17 +40,20 @@ public class BufferedHttpResponseDocumentGenerationDestination extends BufferedD
             return;
         }
 
-        if (reasonPhrase == null) response.sendError(statusCode);
-        else response.sendError(statusCode, reasonPhrase);
+        if (body == null) {
+            if (reasonPhrase == null) response.sendError(statusCode);
+            else response.sendError(statusCode, reasonPhrase);
+        } else {
+            if (reasonPhrase == null) response.setStatus(statusCode);
+            else response.setStatus(statusCode, reasonPhrase);
 
-        if (body == null) return;
+            response.setContentType(contentType);
 
-        response.setContentType(contentType);
+            if (filenameOrNull != null) {
+                response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
+            }
 
-        if (filenameOrNull != null) {
-            response.setHeader("content-disposition", "attachment; filename=\"" + filenameOrNull + "\"");
+            IOUtils.write(body.toByteArray(), response.getOutputStream());
         }
-
-        IOUtils.write(body.toByteArray(), response.getOutputStream());
     }
 }
