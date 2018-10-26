@@ -68,7 +68,7 @@ public class WeaklyCachedXsltTransformer {
      * Can produce a {@link Transformer}.
      *   <p>
      * In principle a {@link Templates} can do this,
-     * however for the identity transformation there is a method from SAXON to produce an identity {@link Transformer}
+     * however for the identity transformation there is a method from Saxon to produce an identity {@link Transformer}
      * but not identity {@link Templates}.
      */
     protected interface XsltTransformerFactory {

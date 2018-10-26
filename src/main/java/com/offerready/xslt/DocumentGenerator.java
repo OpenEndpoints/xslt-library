@@ -41,7 +41,7 @@ import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
  *    <p>
  * <ul>
  * <li><b>Stylevision hacks.</b> It has hacks to change the XSLT produced by StyleVision into that which can be accepted by
- * the free version of SAXON called SAXON HE.
+ * the free version of Saxon called Saxon-HE.
  *    <p>
  * <li><b>Conversion after XSLT.</b> After the XSLT is applied, the resulting XML can be further processed.
  * XSL-FO to PDF, convert HTML to XML, and convert XML to JSON.
