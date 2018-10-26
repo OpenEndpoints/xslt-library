@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
@@ -17,8 +18,10 @@ import javax.mail.internet.MimeBodyPart;
 
 public class EmailPartDocumentDestination extends BufferedDocumentGenerationDestination {
 
+    protected final @Nonnull BodyPart bodyPart;
+
     @SneakyThrows(MessagingException.class)
-    public @Nonnull BodyPart getBodyPart() {
+    public EmailPartDocumentDestination() {
         val dataSource = new DataSource() {
             @Override public String getContentType() { return contentType; }
             @Override public InputStream getInputStream() { return new ByteArrayInputStream(body.toByteArray()); }
@@ -26,13 +29,22 @@ public class EmailPartDocumentDestination extends BufferedDocumentGenerationDest
             @Override public OutputStream getOutputStream() { throw new RuntimeException("unreachable"); }
         };
 
-        val filePart = new MimeBodyPart();
-        filePart.setDataHandler(new DataHandler(dataSource));
-        if (filenameOrNull != null) {
-            filePart.setFileName(filenameOrNull);
-            filePart.setDisposition(Part.ATTACHMENT);
-        }
-
-        return filePart;
+        bodyPart = new MimeBodyPart();
+        bodyPart.setDataHandler(new DataHandler(dataSource));
     }
+
+    @SneakyThrows(MessagingException.class)
+    @Override public void setContentDispositionToDownload(@CheckForNull String filename) {
+        super.setContentDispositionToDownload(filename);
+
+        if (filenameOrNull == null) {
+            bodyPart.setFileName(null);
+            bodyPart.setDisposition(null);
+        } else {
+            bodyPart.setFileName(filenameOrNull);
+            bodyPart.setDisposition(Part.ATTACHMENT);
+        }
+    }
+
+    public @Nonnull BodyPart getBodyPart() { return bodyPart; }
 }
