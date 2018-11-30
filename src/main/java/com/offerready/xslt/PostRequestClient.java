@@ -19,6 +19,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
@@ -53,7 +54,7 @@ public class PostRequestClient {
         @Nonnull DocumentGenerationDestination dest, @Nonnull URL url, @Nonnull Map<String, String> getParameters,
         @CheckForNull String bodyContentType, @Nonnull OutputStreamFiller postBody
     ) throws PostFailedException {
-        try (Timer t = new Timer("send-post-request: " + url)) {
+        try (val t = new Timer("send-post-request: " + url)) {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setUseCaches(false);

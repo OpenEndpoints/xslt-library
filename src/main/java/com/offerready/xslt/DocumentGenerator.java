@@ -134,7 +134,7 @@ public class DocumentGenerator {
 
     @SneakyThrows({TransformerException.class, IOException.class, SAXException.class})
     protected void writePdfFromXslFo(@Nonnull OutputStream pdf, @Nonnull Document fo, @CheckForNull URIResolver uriResolverOrNull) {
-        try (Timer t = new Timer("Create PDF from XSL-FO")) {
+        try (val t = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
             val fopFactory = FopFactory.newInstance();
             if (fopBaseDirOrNull != null) fopFactory.setFontBaseURL(fopBaseDirOrNull.toURI().toString());
