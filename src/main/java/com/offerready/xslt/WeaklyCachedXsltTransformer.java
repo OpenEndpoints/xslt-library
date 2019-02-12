@@ -77,7 +77,7 @@ public class WeaklyCachedXsltTransformer {
   
     protected @CheckForNull String error = null;
 
-    /** After object is initializd, this is never null */
+    /** After object is initialized, this is never null */
     protected XsltTransformerFactory xsltTransformerFactory;
     
     protected class CompileJob implements Runnable {
