@@ -44,21 +44,20 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
 
 * HTML should contain `<table>` elements. 
 * These should contain `<tr>` elements and within them `<td>` (or `<th>`) elements. 
-* Any text within that is parsed to see if it looks like a number, and an Excel number cell is generated; otherwise an Excel text cell is generated. 
-* Numbers should be of the form `1234.56` i.e. English-style numbers without thousand separators.
-* If the option `input-decimal-separator="xxx"` affects how numbers in the input HTML document are parsed. If the attribute is present, it may take one of the following values.
-  * "dot" (default). Decimal separator is ".", thousand separator (ignored) is ",".
-  * "comma". Decimal separator is ",", thousand separator (ignored) is ".".
+* Excel files differentiate between "text cells" and "number cells". The contents of the `<td>` are inspected to see if they look like a number, in which case an Excel "number cell" is produced, otherwise an Excel "text cell" is produced.
+* The attribute `<convert-output-xml-to-excel input-decimal-separator="xxx">` affects how numbers in the input HTML document are parsed.
+  * "dot" (default). Decimal separator is ".", thousand separator is ",".
+  * "comma". Decimal separator is ",", thousand separator is ".".
   * "magic". Numbers may use either dot or comma as thousand or decimal separator. Heuristics are used to determine which system is in use. (This is useful in very broken input documents that use dot for some numbers and comma for others, within the same document.) The numbers must either have zero decimal (e.g. "1,024") or two decimal places (e.g. "12,34"). Any other number of decimal places in the input data will lead to wrong results. 
-* The number of decimal places in the HTML input (e.g. 2 decimal places) are taken over the to Excel cell formatting. 
-* To force the cell to be an Excel text cell (as opposed to potentially a number cell, depending on if content of the HTML table cell look like a number or not), use the attribute `<td excel-type="text">`.
+* The number of decimal places in the `<td>` data are taken over the to Excel cell formatting. That is to say, `<td>12.20</td>` will produce an Excel number cell containing the value 12.2 with the Excel number format showing two decimal places, so will appear as 12.20 in the Excel file.
+* To force the cell to be an Excel text cell, even if the above algorithm would normally classify it as an Excel number cell, make the table cell with `<td excel-type="text">`.
 * The colspan attribute, e.g. `<td colspan="2">`, is respected. 
 * The following style elements of `<td>` are respected:
-  * `style="text-align: center"` (only center is supported, not right)
+  * `style="text-align: center"` (Right align etc. is not supported)
   * `style="font-weight: bold"`
-  * `style="border-top:"` (only top border is supported)
-  * `style="color: x"` where `x` can be `green`, `red`, `orange`.
-* `<thead>`, `<tfoot>` and `<tbody>` may be present and are respected. (Elements in `<tfoot>` sections will appear at the bottom of the Excel file, no matter what order the tags come in in the HTML.) 
+  * `style="border-top:"` (Bottom borders etc. are not supported)
+  * `style="color: green"`, `style="color: red"`, `style="color: orange"` (Other colors are not supported.)
+* `<thead>`, `<tfoot>` and `<tbody>` are respected. (Elements in `<tfoot>` sections will appear at the bottom of the Excel file, no matter what order the tags come in in the HTML.) 
 * Column widths are determined by the lengths of text within each column. 
 * Any `<table>` which appears inside a `<td>` is ignored (i.e. tables may be nested in the HTML, only the outermost table is present in the resulting Excel file.) 
 * Any other elements such as `<html>` or `<span>` are ignored; this allows most HTML to be used as-is. 
