@@ -4,7 +4,7 @@
 
     <groupId>com.offerready</groupId>
     <artifactId>xslt-library</artifactId>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
     <name>Offer-Ready XSLT Library</name>
     <description>Utility classes for XSLT processing used at Offer-Ready GmbH</description>
     <url>https://github.com/offer-ready/xslt-library</url>
@@ -71,6 +71,17 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
             <version>0.95</version>
+            <exclusions>
+                <!-- xmlgraphics by default includes various multiple definition of org/w3c/dom/events/Event.class etc. -->
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis-ext</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.avalon.framework</groupId> <!-- needed by FOP -->
