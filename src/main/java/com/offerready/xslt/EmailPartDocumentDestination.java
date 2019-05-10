@@ -20,17 +20,24 @@ public class EmailPartDocumentDestination extends BufferedDocumentGenerationDest
 
     protected final @Nonnull BodyPart bodyPart;
 
+    /** @param destination does not have to be populated yet */
     @SneakyThrows(MessagingException.class)
-    public EmailPartDocumentDestination() {
+    public static @Nonnull BodyPart newMimeBodyForDestination(BufferedDocumentGenerationDestination destination) {
         val dataSource = new DataSource() {
-            @Override public String getContentType() { return contentType; }
-            @Override public InputStream getInputStream() { return new ByteArrayInputStream(body.toByteArray()); }
-            @Override public String getName() { return filenameOrNull; }
+            @Override public String getContentType() { return destination.getContentType(); }
+            @Override public InputStream getInputStream() { return new ByteArrayInputStream(destination.getBody().toByteArray()); }
+            @Override public String getName() { return destination.getFilenameOrNull(); }
             @Override public OutputStream getOutputStream() { throw new RuntimeException("unreachable"); }
         };
 
-        bodyPart = new MimeBodyPart();
-        bodyPart.setDataHandler(new DataHandler(dataSource));
+        val result = new MimeBodyPart();
+        result.setDataHandler(new DataHandler(dataSource));
+
+        return result;
+    }
+
+    public EmailPartDocumentDestination() {
+        bodyPart = newMimeBodyForDestination(this);
     }
 
     @SneakyThrows(MessagingException.class)
