@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-public abstract class BufferedDocumentGenerationDestination implements DocumentGenerationDestination {
+public class BufferedDocumentGenerationDestination implements DocumentGenerationDestination {
 
     protected @Getter String contentType;
     protected @Getter @CheckForNull String filenameOrNull = null;
