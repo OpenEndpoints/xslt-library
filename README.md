@@ -14,6 +14,8 @@ If Saxon-PE is available (see "deployment.md" how to install and use Saxon-PE), 
 
 * `<xsl:value-of select="digest:sha256Hex('foo')" xmlns:digest="java:org.apache.commons.codec.digest.DigestUtils"/>`
 
+* `<xsl:value-of select="reCaptchaV3:check('server side key', 'token-from-request')" xmlns:reCaptchaV3="java:com.offerready.xslt.xsltfunction.ReCaptchaV3Client"/>` yields a number from 0.0 to 1.0, or -1.0 in the case a communication error has occurred (see log for more details of the error)
+
 Transformers
 ------------
 The root element can have the child element `<xslt-file name="my-transformation.xslt"/>`. If present, this references an XSLT file in the `data-source-xslt` directory of the application. If not present, no XSLT transformation is done.
