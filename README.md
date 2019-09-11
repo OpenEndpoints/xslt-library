@@ -8,7 +8,7 @@ All XSLT transformation uses XSLT 2.0, and is applied using the Java library Sax
 
 By default the Saxon-HE product is used, which is open-source and requires no license fees.
 
-If Saxon-PE is available (see "deployment.md" how to install and use Saxon-PE), then the following functions are available to XSLT:
+If Saxon-PE is available, then the following functions are available to XSLT:
 
 * `<xsl:value-of select="uuid:randomUUID()" xmlns:uuid="java:java.util.UUID"/>`
 
