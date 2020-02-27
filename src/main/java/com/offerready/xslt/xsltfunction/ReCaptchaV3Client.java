@@ -34,7 +34,6 @@ public class ReCaptchaV3Client {
             params.put("serverSideKey", serverSideKey);
             params.put("tokenFromRequest", tokenFromRequest);
             val urlExpanded = PlaintextParameterReplacer.replacePlainTextParameters(urlPattern, params);
-            System.out.println("************* URL: " + urlExpanded);
             val response = new ObjectMapper().readValue(new URL(urlExpanded), Response.class);
             if ( ! response.success) 
                 throw new RuntimeException(String.format("Response JSON contains: success=false; errorCodes=[%s]", 
