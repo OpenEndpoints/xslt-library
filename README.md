@@ -12,6 +12,12 @@ If Saxon-PE is available, then the following functions are available to XSLT:
 
 * `<xsl:value-of select="uuid:randomUUID()" xmlns:uuid="java:java.util.UUID"/>`
 
+* `<xsl:value-of select="math:random()" xmlns:math="java:java.lang.Math"/>` - Generate random number between 0 and 1, e.g. 0.37575608763635215.
+
+* `<xsl:value-of select="base64:encode('foo')" xmlns:base64="java:com.offerready.xslt.xsltfunction.Base64"/>`
+
+* `<xsl:value-of select="base64:decode('Zm9v')" xmlns:base64="java:com.offerready.xslt.xsltfunction.Base64"/>` - assumption is that the encoded text is UTF-8 text.
+                          
 * `<xsl:value-of select="digest:sha256Hex('foo')" xmlns:digest="java:org.apache.commons.codec.digest.DigestUtils"/>`
 
 * `<xsl:value-of select="reCaptchaV3:check('server side key', 'token-from-request')" xmlns:reCaptchaV3="java:com.offerready.xslt.xsltfunction.ReCaptchaV3Client"/>` yields a number from 0.0 to 1.0, or -1.0 in the case a communication error has occurred (see log for more details of the error)
