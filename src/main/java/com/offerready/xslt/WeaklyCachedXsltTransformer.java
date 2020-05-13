@@ -39,7 +39,6 @@ import org.xml.sax.SAXException;
  *    <p>
  * Compilation of an XSLT file can fail (e.g. if the XSLT file is invalid).
  * In this case, the desired behaviour is that all other valid XSLTs can be applied, so no exception is thrown upon compilation.
- * Application of an XSLT which failed to compile will throw a {@link DocumentTemplateInvalidException}.
  * The method {@link #assertValid()} returns void if the template is OK and throws the DocumentTemplateInvalidException otherwise.
  */
 @SuppressWarnings("serial")
@@ -47,6 +46,7 @@ public class WeaklyCachedXsltTransformer {
     
     private static final Map<String, WeakReference<WeaklyCachedXsltTransformer>> cache = new HashMap<>();
     
+    /** Thrown if an XSLT is applied which previously did not compile */
     public static class DocumentTemplateInvalidException extends Exception {
         public DocumentTemplateInvalidException(String msg) { super(msg); }
     }

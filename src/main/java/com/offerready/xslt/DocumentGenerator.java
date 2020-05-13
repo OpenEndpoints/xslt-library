@@ -164,7 +164,6 @@ public class DocumentGenerator {
      * @param response  this is closed by this method 
      * @param transform if false, then don't do transformation, but output XML instead (for debugging)
      * @param uriResolverOrNull if not null, pass an object which can, for example, fetch or create images via programmatic logic
-     * @throws DocumentTemplateInvalidException in case the XSLT template wasn't valid
      */
     @SneakyThrows({TransformerException.class, IOException.class})
     public void transform(
