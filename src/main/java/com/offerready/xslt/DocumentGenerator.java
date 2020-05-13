@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -96,16 +97,24 @@ public class DocumentGenerator {
         }
     }
     
-    public DocumentGenerator(@Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn)
+    public DocumentGenerator(
+        @Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn,
+        @Nonnull Function<File, Xslt> newXslt
+    )
     throws ConfigurationException {
         this.defn = defn;
         if (defn.xsltFileOrNull == null)
             this.transformer = WeaklyCachedXsltTransformer.getIdentityTransformer();
         else 
             this.transformer = WeaklyCachedXsltTransformer.getTransformerOrScheduleCompilation(
-                threads, defn.xsltFileOrNull.getAbsolutePath(), new StyleVisionXslt(defn.xsltFileOrNull));
+                threads, defn.xsltFileOrNull.getAbsolutePath(), newXslt.apply(defn.xsltFileOrNull));
     }
     
+    public DocumentGenerator(@Nonnull XsltCompilationThreads threads, @Nonnull DocumentOutputDefinition defn)
+    throws ConfigurationException {
+        this(threads, defn, StyleVisionXslt::new);
+    }
+
     public void setFopConfigOrNull(@CheckForNull File fopBaseDirOrNull, @CheckForNull File fopConfigOrNull) {
         this.fopBaseDirOrNull = fopBaseDirOrNull;
         this.fopConfigOrNull = fopConfigOrNull;
