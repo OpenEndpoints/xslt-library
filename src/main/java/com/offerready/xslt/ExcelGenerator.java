@@ -62,20 +62,27 @@ public class ExcelGenerator extends DefaultHandler {
         },
         magic {
             public @CheckForNull Double tryParseNumber(@Nonnull String str) {
-                Matcher matcherDecimal = Pattern.compile("(-?[\\d,.]+)[,.](\\d{2})").matcher(str);
-                if (matcherDecimal.matches())
-                    try { return new Double(matcherDecimal.group(1).replace(".", "").replace(",", "") + "." + matcherDecimal.group(2)); }
+                Matcher matcherDecimal = Pattern.compile("(-?[\\d,.']+)[,.](\\d{2})").matcher(str);
+                if (matcherDecimal.matches()) {
+                    try { 
+                        return new Double(matcherDecimal.group(1).replaceAll("[,.']", "") 
+                            + "." + matcherDecimal.group(2)); 
+                    }
                     catch (NumberFormatException ignored) { }
+                }
 
-                Matcher matcherInteger = Pattern.compile("(-?[\\d,.]+)").matcher(str);
-                if (matcherInteger.matches())
-                    try { return new Double(matcherInteger.group(1).replace(".", "").replace(",", "")); }
+                Matcher matcherInteger = Pattern.compile("(-?[\\d,.']+)").matcher(str);
+                if (matcherInteger.matches()) {
+                    try { 
+                        return new Double(matcherInteger.group(1).replaceAll("[,.']", "")); 
+                    }
                     catch (NumberFormatException ignored) { }
+                }
 
                 return null;
             }
             public int determineDecimalPlaces(@Nonnull String string) {
-                return (string.matches("\\s*-?[\\d,.]*[.,]\\d{2}\\s*")) ? 2 : 0;
+                return (string.matches("\\s*-?[\\d',.]*[.,]\\d{2}\\s*")) ? 2 : 0;
             }
         };
         public abstract @CheckForNull Double tryParseNumber(@Nonnull String potentialNumber);
