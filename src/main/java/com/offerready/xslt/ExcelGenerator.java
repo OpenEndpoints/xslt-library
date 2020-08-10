@@ -157,6 +157,7 @@ public class ExcelGenerator extends DefaultHandler {
     protected List<CellFromHtml> currentRow=null;
     protected CellFromHtml currentCell=null;
     protected int tableDepth = 0;
+    protected boolean inScript = false;
     
     // Debugging and logging
     Timer timer;
@@ -235,6 +236,7 @@ public class ExcelGenerator extends DefaultHandler {
             }
         }
         if (tableDepth != 1) return;
+        if ("script".equals(qName)) inScript = true;
         if ("thead".equals(qName)) currentMatrix = currentHeadMatrix;
         if ("tfoot".equals(qName)) currentMatrix = currentFootMatrix;
         if ("tr".equals(qName)) currentMatrix.add(currentRow = new ArrayList<>());
@@ -268,6 +270,7 @@ public class ExcelGenerator extends DefaultHandler {
             tableDepth--;
         }
         if (tableDepth != 1) return;
+        if ("script".equals(qName)) inScript = false;
         if ("thead".equals(qName)) currentMatrix = currentBodyMatrix;
         if ("tfoot".equals(qName)) currentMatrix = currentBodyMatrix;
         if ("tr".equals(qName)) {
@@ -281,6 +284,7 @@ public class ExcelGenerator extends DefaultHandler {
 
     @Override public void characters(char[] ch, int start, int length) throws SAXException {
         if (tableDepth != 1) return;
+        if (inScript) return;
         if (currentCell != null) {
             String chars = new String(ch, start, length);
             chars = chars.replace("\u00A0", " "); // Non-breaking spaces aren't desired (trim(), later, removes only normal space)

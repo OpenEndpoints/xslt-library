@@ -68,6 +68,7 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
 * `<thead>`, `<tfoot>` and `<tbody>` are respected. (Elements in `<tfoot>` sections will appear at the bottom of the Excel file, no matter what order the tags come in in the HTML.) 
 * Column widths are determined by the lengths of text within each column. 
 * Any `<table>` which appears inside a `<td>` is ignored (i.e. tables may be nested in the HTML, only the outermost table is present in the resulting Excel file.) 
-* Any other elements such as `<html>` or `<span>` are ignored; this allows most HTML to be used as-is. 
+* The contents of any `<script>` elements are ignored
+* The contents of any other tags such as `<span>` and `<div>` are included.
 * Table rows which contain only table cells which contain no text are ignored. (Often such rows contain sub-tables, which themselves are ignored. Having empty rows doesn't look nice.) 
 
