@@ -173,11 +173,13 @@ public class DocumentGenerator {
      * @param response  this is closed by this method 
      * @param transform if false, then don't do transformation, but output XML instead (for debugging)
      * @param uriResolverOrNull if not null, pass an object which can, for example, fetch or create images via programmatic logic
+     * @param language for example "de" to choose different XSLT params (placeholder values). Or null to just use the default.
      */
     @SneakyThrows({TransformerException.class, IOException.class})
     public void transform(
         @Nonnull DocumentGenerationDestination response, @Nonnull Document xml,
-        boolean transform, @CheckForNull URIResolver uriResolverOrNull
+        boolean transform, @CheckForNull URIResolver uriResolverOrNull,
+        @CheckForNull String language
     ) throws DocumentTemplateInvalidException {
         if (transform == false) {
             writePlainXml(response, xml);
@@ -185,7 +187,7 @@ public class DocumentGenerator {
         }
 
         val xslt = transformer.newTransformer();
-        for (val placeholderValue : defn.placeholderValues.entrySet())
+        for (val placeholderValue : defn.xsltParameters.get(language).entrySet())
             xslt.setParameter(placeholderValue.getKey(), placeholderValue.getValue());
 
         switch (defn.outputConversion) {

@@ -1,7 +1,6 @@
 package com.offerready.xslt;
 
 import java.io.File;
-import java.util.HashMap;
 
 import com.offerready.xslt.ExcelGenerator.InputDecimalSeparator;
 import lombok.val;
@@ -57,18 +56,11 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
         } else xsltFileOrNull = null;
         
-        val placeholderValues = new HashMap<String, String>();
-        for (Element p : getSubElements(outputDefnElement, "placeholder-value")) {
-            String key = getMandatoryAttribute(p, "placeholder-name");
-            String value = getMandatoryAttribute(p, "value");
-            placeholderValues.put(key, value);
-        }
-
         String contentType = null;
         val contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
         if (contentTypeElement != null) contentType = getMandatoryAttribute(contentTypeElement, "type");
         
-        val result = new DocumentOutputDefinition(placeholderValues);
+        val result = new DocumentOutputDefinition(new XsltParameters(outputDefnElement));
         result.xsltFileOrNull = xsltFileOrNull;
         result.outputConversion =
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :
