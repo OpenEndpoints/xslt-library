@@ -1,7 +1,6 @@
 package com.offerready.xslt;
 
 import lombok.SneakyThrows;
-import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -23,14 +22,14 @@ public class EmailPartDocumentDestination extends BufferedDocumentGenerationDest
     /** @param destination does not have to be populated yet */
     @SneakyThrows(MessagingException.class)
     public static @Nonnull BodyPart newMimeBodyForDestination(BufferedDocumentGenerationDestination destination) {
-        val dataSource = new DataSource() {
+        var dataSource = new DataSource() {
             @Override public String getContentType() { return destination.getContentType(); }
             @Override public InputStream getInputStream() { return new ByteArrayInputStream(destination.getBody().toByteArray()); }
             @Override public String getName() { return destination.getFilenameOrNull(); }
             @Override public OutputStream getOutputStream() { throw new RuntimeException("unreachable"); }
         };
 
-        val result = new MimeBodyPart();
+        var result = new MimeBodyPart();
         result.setDataHandler(new DataHandler(dataSource));
 
         return result;

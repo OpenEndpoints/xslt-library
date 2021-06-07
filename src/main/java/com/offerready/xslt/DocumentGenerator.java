@@ -21,7 +21,6 @@ import javax.xml.transform.stream.StreamResult;
 import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 import org.json.XML;
@@ -76,20 +75,20 @@ public class DocumentGenerator {
             // The free version of Saxon throws if this tag is present (tells one to buy the commercial version)
             // We don't need XSD checking, so firstly parse the XSLT file into a DOM, then strip out this tag
 
-            val allImportSchemaTags = result.getElementsByTagNameNS(
+            var allImportSchemaTags = result.getElementsByTagNameNS(
                 "http://www.w3.org/1999/XSL/Transform", "import-schema");
             if (allImportSchemaTags.getLength() > 0) {
-                val importSchemaTag = (Element) allImportSchemaTags.item(0);
+                var importSchemaTag = (Element) allImportSchemaTags.item(0);
                 importSchemaTag.getParentNode().removeChild(importSchemaTag);
             }
 
             // XSLT files produced with <xsl:result-document href="xxx"> and this causes file to be written,
             // meaning that we can't stream the result to the browser. If we remove the attribute, all is good.
 
-            val allResultDocumentTags = result.getElementsByTagNameNS(
+            var allResultDocumentTags = result.getElementsByTagNameNS(
                 "http://www.w3.org/1999/XSL/Transform", "result-document");
             for (int i = 0; i < allResultDocumentTags.getLength(); i++) {
-                val a = allResultDocumentTags.item(i).getAttributes();
+                var a = allResultDocumentTags.item(i).getAttributes();
                 if (a.getNamedItem("href") != null) a.removeNamedItem("href");
             }
 
@@ -126,39 +125,39 @@ public class DocumentGenerator {
 
     @SneakyThrows({TransformerException.class, IOException.class})
     protected void writePlainXml(@Nonnull DocumentGenerationDestination response, @Nonnull Document xml) {
-        val systemProperties = System.getProperties();
+        var systemProperties = System.getProperties();
         systemProperties.remove("javax.xml.transform.TransformerFactory");
         System.setProperties(systemProperties);
 
         response.setContentType("text/plain; charset=UTF-8");
-        val transformer = TransformerFactory.newInstance().newTransformer();
+        var transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-        val source = new DOMSource(xml);
-        val result = new StreamResult(response.getOutputStream());
+        var source = new DOMSource(xml);
+        var result = new StreamResult(response.getOutputStream());
         transformer.transform(source, result);
         response.getOutputStream().close();
     }
 
     @SneakyThrows({TransformerException.class, IOException.class, SAXException.class})
     protected void writePdfFromXslFo(@Nonnull OutputStream pdf, @Nonnull Document fo, @CheckForNull URIResolver uriResolverOrNull) {
-        try (val t = new Timer("Create PDF from XSL-FO")) {
+        try (var t = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
-            val fopFactory = FopFactory.newInstance();
+            var fopFactory = FopFactory.newInstance();
             if (fopBaseDirOrNull != null) fopFactory.setFontBaseURL(fopBaseDirOrNull.toURI().toString());
             if (fopConfigOrNull != null) fopFactory.setUserConfig(fopConfigOrNull);
-            val foUserAgent = fopFactory.newFOUserAgent();
+            var foUserAgent = fopFactory.newFOUserAgent();
             if (imagesBase != null) foUserAgent.setBaseURL(imagesBase.toURI().toString());
             if (uriResolverOrNull != null) foUserAgent.setURIResolver(uriResolverOrNull);
-            val fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
+            var fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
 
             // Setup JAXP using identity transformer
-            val factory = TransformerFactory.newInstance();
-            val transformer = factory.newTransformer(); // identity transformer
+            var factory = TransformerFactory.newInstance();
+            var transformer = factory.newTransformer(); // identity transformer
             
             // Resulting SAX events (the generated FO) must be piped through to FOP
-            val res = new SAXResult(fop.getDefaultHandler());
+            var res = new SAXResult(fop.getDefaultHandler());
 
             // Start XSLT transformation and FOP processing
             transformer.transform(new DOMSource(fo), res);
@@ -186,43 +185,43 @@ public class DocumentGenerator {
             return;
         }
 
-        val xslt = transformer.newTransformer();
-        for (val placeholderValue : defn.xsltParameters.get(language).entrySet())
+        var xslt = transformer.newTransformer();
+        for (var placeholderValue : defn.xsltParameters.get(language).entrySet())
             xslt.setParameter(placeholderValue.getKey(), placeholderValue.getValue());
 
         switch (defn.outputConversion) {
             case xmlToJson:
                 response.setContentType((defn.contentType == null ? "application/json" : defn.contentType) + "; charset=UTF-8");
-                val xmlOutput = new StringWriter();
-                try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
-                val json = XML.toJSONObject(xmlOutput.toString());
-                try (val outputStream = response.getOutputStream()) {
+                var xmlOutput = new StringWriter();
+                try (var t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
+                var json = XML.toJSONObject(xmlOutput.toString());
+                try (var outputStream = response.getOutputStream()) {
                     outputStream.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
                 }
                 break;
 
             case xslFoToPdf:
                 response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
-                val xslFo = new DOMResult();
-                try (val t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
-                try (val outputStream = response.getOutputStream()) {
+                var xslFo = new DOMResult();
+                try (var t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
+                try (var outputStream = response.getOutputStream()) {
                     writePdfFromXslFo(outputStream, (Document) xslFo.getNode(), uriResolverOrNull);
                 }
                 break;
 
             case excelXmlToExcelBinary:
                 response.setContentType(defn.contentType == null ? "application/ms-excel" : defn.contentType);
-                try (val outputStream = response.getOutputStream()) {
+                try (var outputStream = response.getOutputStream()) {
                     xslt.transform(new DOMSource(xml), new SAXResult(new ExcelGenerator(defn.inputDecimalSeparator, outputStream)));
                 }
                 break;
 
             default:
                 response.setContentType((defn.contentType == null ? "text/plain" : defn.contentType) + "; charset=UTF-8");
-                try (val outputStream = response.getOutputStream()) {
-                    val result = new StreamResult(outputStream);
+                try (var outputStream = response.getOutputStream()) {
+                    var result = new StreamResult(outputStream);
                     xslt.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
-                    try (val t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
+                    try (var t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
                 }
                 break;
         }

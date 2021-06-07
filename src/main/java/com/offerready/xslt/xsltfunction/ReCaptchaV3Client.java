@@ -5,7 +5,6 @@ import com.databasesandlife.util.Timer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.val;
 import org.apache.log4j.Logger;
 
 import javax.annotation.CheckForNull;
@@ -29,12 +28,12 @@ public class ReCaptchaV3Client {
     }
 
     public static double check(String serverSideKey, String tokenFromRequest) {
-        try (val ignored = new Timer("ReCaptchaV3Client.check")) {
-            val params = new HashMap<String, String>();
+        try (var ignored = new Timer("ReCaptchaV3Client.check")) {
+            var params = new HashMap<String, String>();
             params.put("serverSideKey", serverSideKey);
             params.put("tokenFromRequest", tokenFromRequest);
-            val urlExpanded = PlaintextParameterReplacer.replacePlainTextParameters(urlPattern, params);
-            val response = new ObjectMapper().readValue(new URL(urlExpanded), Response.class);
+            var urlExpanded = PlaintextParameterReplacer.replacePlainTextParameters(urlPattern, params);
+            var response = new ObjectMapper().readValue(new URL(urlExpanded), Response.class);
             if ( ! response.success) 
                 throw new RuntimeException(String.format("Response JSON contains: success=false; errorCodes=[%s]", 
                     String.join(",", Optional.ofNullable(response.errorCodes).orElse(emptyList()))));

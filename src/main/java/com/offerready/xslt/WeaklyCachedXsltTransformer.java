@@ -16,7 +16,6 @@ import javax.xml.transform.dom.DOMSource;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
@@ -87,18 +86,18 @@ public class WeaklyCachedXsltTransformer {
         protected CompileJob(@Nonnull String m, @Nonnull String n, @Nonnull Document x) { md5 = m; nameForLogging = n; xslt = x; }
         
         public void run() {
-            val errorString = new StringBuilder();
+            var errorString = new StringBuilder();
             ErrorListener errorListener = new ErrorListener() {
                 public void warning(TransformerException e) { errorString.append("\nERROR: ").append(e.getMessage()); }
                 public void error(TransformerException e) { errorString.append("\nWARN: ").append(e.getMessage()); }
                 public void fatalError(TransformerException e) { errorString.append("\nFATAL: ").append(e.getMessage()); }
             };
 
-            try (val t = new Timer("Compiling XSLT '" + nameForLogging + "'")) {
-                val transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
+            try (var t = new Timer("Compiling XSLT '" + nameForLogging + "'")) {
+                var transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
                     TransformerFactoryImpl.class.getName(), DocumentGenerator.class.getClassLoader());
                 transformerFactory.setErrorListener(errorListener);
-                val templates = transformerFactory.newTemplates(new DOMSource(xslt));
+                var templates = transformerFactory.newTemplates(new DOMSource(xslt));
                 xsltTransformerFactory = new XsltTransformerFactory() {
                     @SneakyThrows(TransformerConfigurationException.class)
                     @Override public Transformer newTransformer() { return templates.newTransformer(); }
@@ -118,7 +117,7 @@ public class WeaklyCachedXsltTransformer {
     public static class XsltCompilationThreads extends ThreadPool {
         final Map<String, WeaklyCachedXsltTransformer> toCompileForXsltMd5 = new HashMap<>();
         @Override public void execute() {
-            try (val t = new Timer(threadNamePrefix)) {
+            try (var t = new Timer(threadNamePrefix)) {
                 super.execute(); 
             }
         }
@@ -127,9 +126,9 @@ public class WeaklyCachedXsltTransformer {
     public synchronized static @Nonnull WeaklyCachedXsltTransformer getTransformerOrScheduleCompilation(
         @Nonnull XsltCompilationThreads threads, @Nonnull String nameForLogging, @Nonnull Xslt xslt
     ) throws ConfigurationException {
-        val cacheKey = xslt.calculateCacheKey();
+        var cacheKey = xslt.calculateCacheKey();
 
-        val ref = cache.get(cacheKey);
+        var ref = cache.get(cacheKey);
         WeaklyCachedXsltTransformer result = (ref == null) ? null : ref.get();
         if (result != null) return result;
         
@@ -143,10 +142,10 @@ public class WeaklyCachedXsltTransformer {
     }
 
     public static @Nonnull WeaklyCachedXsltTransformer getIdentityTransformer() {
-        val transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
+        var transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
             TransformerFactoryImpl.class.getName(), DocumentGenerator.class.getClassLoader());
 
-        val result = new WeaklyCachedXsltTransformer();
+        var result = new WeaklyCachedXsltTransformer();
         result.xsltTransformerFactory = new XsltTransformerFactory() {
             @SneakyThrows(TransformerConfigurationException.class)
             @Override public Transformer newTransformer() { return transformerFactory.newTransformer(); }
@@ -159,7 +158,7 @@ public class WeaklyCachedXsltTransformer {
     }
 
     public static @Nonnull WeaklyCachedXsltTransformer newInvalidTransformer(@Nonnull String error) {
-        val result = new WeaklyCachedXsltTransformer();
+        var result = new WeaklyCachedXsltTransformer();
         result.error = error;
         return result;
     }

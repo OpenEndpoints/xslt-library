@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.databasesandlife.util.Timer;
-import lombok.val;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -45,7 +44,7 @@ public class HtmlBodyExtractor {
     }
     
     protected @Nonnull String ignoreScripts(@Nonnull String html) {
-        for (val s : scriptsToIgnore)
+        for (var s : scriptsToIgnore)
             html = html.replaceAll(
                 "<script src=['\"][^'\"]*" + Pattern.quote(s) + "[^'\"]*['\"]></script>", 
                 "<!-- ignoring " + s + " -->");
@@ -58,7 +57,7 @@ public class HtmlBodyExtractor {
         @Nonnull String start, @CheckForNull String endOfStartOrNull, @Nonnull String end
     ) {
         int startIdx = -1;
-        val ourResult = new StringBuilder();
+        var ourResult = new StringBuilder();
         while ((startIdx = input.indexOf(start, startIdx+1)) >= 0) {
             int idxOfEndTag = input.indexOf(end, startIdx);
             Range range = endOfStartOrNull == null 
@@ -75,9 +74,9 @@ public class HtmlBodyExtractor {
     }
     
     public @Nonnull String extractBody(@Nonnull String htmlText) {
-        try (val t = new Timer("HtmlBodyExtractor.extractBody")) {
-            val result  = new StringBuilder();  // 2.5 seconds at 1k iterations on i3
-            val ranges = new ArrayList<Range>();
+        try (var t = new Timer("HtmlBodyExtractor.extractBody")) {
+            var result  = new StringBuilder();  // 2.5 seconds at 1k iterations on i3
+            var ranges = new ArrayList<Range>();
             
             extractElements(result, htmlText, ranges, "<body",         ">",  "</body>");
             extractElements(result, htmlText, ranges, "<!--[if IE]>",  null, "<![endif]-->");

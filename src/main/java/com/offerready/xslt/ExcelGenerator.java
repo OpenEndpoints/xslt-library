@@ -29,7 +29,6 @@ import jxl.write.biff.CellValue;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -42,7 +41,7 @@ public class ExcelGenerator extends DefaultHandler {
     public enum InputDecimalSeparator {
         dot {
             public @CheckForNull Double tryParseNumber(@Nonnull String str) {
-                try { return new Double(str.replace(",","")); }
+                try { return Double.valueOf(str.replace(",","")); }
                 catch (NumberFormatException ignored) { return null; }
             }
             public int determineDecimalPlaces(@Nonnull String string) {
@@ -52,7 +51,7 @@ public class ExcelGenerator extends DefaultHandler {
         },
         comma {
             public @CheckForNull Double tryParseNumber(@Nonnull String str) {
-                try { return new Double(str.replace(".", "").replace(",", ".")); }
+                try { return Double.valueOf(str.replace(".", "").replace(",", ".")); }
                 catch (NumberFormatException ignored) { return null; }
             }
             public int determineDecimalPlaces(@Nonnull String string) {
@@ -65,7 +64,7 @@ public class ExcelGenerator extends DefaultHandler {
                 Matcher matcherDecimal = Pattern.compile("(-?[\\d,.']+)[,.](\\d{2})").matcher(str);
                 if (matcherDecimal.matches()) {
                     try { 
-                        return new Double(matcherDecimal.group(1).replaceAll("[,.']", "") 
+                        return Double.valueOf(matcherDecimal.group(1).replaceAll("[,.']", "") 
                             + "." + matcherDecimal.group(2)); 
                     }
                     catch (NumberFormatException ignored) { }
@@ -74,7 +73,7 @@ public class ExcelGenerator extends DefaultHandler {
                 Matcher matcherInteger = Pattern.compile("(-?[\\d,.']+)").matcher(str);
                 if (matcherInteger.matches()) {
                     try { 
-                        return new Double(matcherInteger.group(1).replaceAll("[,.']", "")); 
+                        return Double.valueOf(matcherInteger.group(1).replaceAll("[,.']", "")); 
                     }
                     catch (NumberFormatException ignored) { }
                 }
@@ -127,7 +126,7 @@ public class ExcelGenerator extends DefaultHandler {
             if (format.isCentered) result.setAlignment(Alignment.CENTRE);
             if (format.hasTopBorder) result.setBorder(Border.TOP, BorderLineStyle.THIN);
 
-            val font = new WritableFont(WritableFont.createFont(result.getFont().getName()), result.getFont().getPointSize());
+            var font = new WritableFont(WritableFont.createFont(result.getFont().getName()), result.getFont().getPointSize());
             if (format.isBold) font.setBoldStyle(WritableFont.BOLD);
             if (format.color != null) font.setColour(format.color.toExcelColour());
             result.setFont(font);
@@ -173,7 +172,7 @@ public class ExcelGenerator extends DefaultHandler {
     
     /** @return String or Double */
     protected @Nonnull Object parseString(@Nonnull String str) {
-        val numberOrNull = inputDecimalSeparator.tryParseNumber(str);
+        var numberOrNull = inputDecimalSeparator.tryParseNumber(str);
         if (numberOrNull != null) return numberOrNull;
 
         return str.trim();
@@ -193,23 +192,23 @@ public class ExcelGenerator extends DefaultHandler {
         // If we generate a new WritableCellFormat for each cell, at some point we get the error:
         //    Warning:  Maximum number of format records exceeded.  Using default format.
         // Therefore, cache them
-        val formats = new HashMap<CellAndNumberFormat, WritableCellFormat>();
+        var formats = new HashMap<CellAndNumberFormat, WritableCellFormat>();
 
-        for (val row : matrix) {
+        for (var row : matrix) {
             int colIdx = 0;
-            for (val cell : row) {
-                val cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
+            for (var cell : row) {
+                var cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
                 int columnWidthChars = 0;
                 CellValue excelCell;
                 if (cellValue instanceof Double) {
                     int decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
-                    val cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
-                    val format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
+                    var cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
+                    var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
                     excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format);
                     columnWidthChars = String.format("%."+decimalPlaces+"f", ((Double) cellValue)).length();
                 } else if (cellValue instanceof String) {
-                    val cellAndNumberFormat = new CellAndNumberFormat(cell.format, null);
-                    val format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
+                    var cellAndNumberFormat = new CellAndNumberFormat(cell.format, null);
+                    var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
                     excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, format);
                     columnWidthChars = ((String) cellValue).length();
                 } else {

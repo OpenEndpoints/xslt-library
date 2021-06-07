@@ -1,6 +1,5 @@
 package com.offerready.xslt.config;
 
-import lombok.val;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -29,7 +28,7 @@ public class PrivilegeRestriction implements Serializable {
     }
 
     public @Nonnull String toString() {
-        val result = new StringBuilder();
+        var result = new StringBuilder();
         result.append(type.toString());
         result.append("[");
         boolean first = true;
@@ -48,8 +47,8 @@ public class PrivilegeRestriction implements Serializable {
     }
 
     public static @Nonnull <P extends HasPrivilegeRestriction> List<P> restrict(@Nonnull Collection<P> input, @Nonnull Privilege privilege) {
-        val result = new ArrayList<P>(input.size());
-        for (val candidate : input)
+        var result = new ArrayList<P>(input.size());
+        for (var candidate : input)
             if (candidate.getPrivilegeRestriction().isAllowed(privilege))
                 result.add(candidate);
         return result;
@@ -60,12 +59,12 @@ public class PrivilegeRestriction implements Serializable {
      * @return privilege name which doesn't have an option, or null if all have options
      */
     public static @CheckForNull Privilege checkListManagesAllCases(@Nonnull List<PrivilegeRestriction> l) {
-        val allPrivileges = new HashSet<Privilege>();
+        var allPrivileges = new HashSet<Privilege>();
         allPrivileges.add(new Privilege("*other*"));
-        for (val restriction : l)
+        for (var restriction : l)
             allPrivileges.addAll(restriction.privileges);
 
-        for (val p : allPrivileges) {
+        for (var p : allPrivileges) {
             boolean allowed = false;
             for (PrivilegeRestriction restriction : l)
                 if (restriction.isAllowed(p)) allowed = true;

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-import lombok.val;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,15 +23,15 @@ public class SecurityParser extends DomParser {
     /** @return not empty */
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
-        try (val t = new Timer("parse-security-xml")) {
-            val doc = DomParser.newDocumentBuilder().parse(i);
+        try (var t = new Timer("parse-security-xml")) {
+            var doc = DomParser.newDocumentBuilder().parse(i);
 
-            val root = doc.getDocumentElement();
+            var root = doc.getDocumentElement();
             if ( ! root.getNodeName().equals("security")) throw new ConfigurationException("Root node must be <security>");
 
             assertNoOtherElements(root, "secret-key");
             
-            val result = new ArrayList<String>();
+            var result = new ArrayList<String>();
             for (Element e : getSubElements(root, "secret-key")) result.add(e.getTextContent());
             if (result.isEmpty()) throw new ConfigurationException("At least one <secret-key> must be present");
             return result.toArray(new String[0]);
@@ -45,7 +44,7 @@ public class SecurityParser extends DomParser {
     public static @Nonnull String[] parse(@Nonnull File file)
     throws ConfigurationException {
         try {
-            try (val i = new FileInputStream(file)) { return parse(i); }
+            try (var i = new FileInputStream(file)) { return parse(i); }
         }
         catch (IOException e) { throw new ConfigurationException("Problem with '"+file+"'", e); }
     }

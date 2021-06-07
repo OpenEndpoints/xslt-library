@@ -1,7 +1,6 @@
 package com.offerready.xslt;
 
 import junit.framework.TestCase;
-import lombok.val;
 
 import static com.offerready.xslt.ExcelGenerator.InputDecimalSeparator.magic;
 

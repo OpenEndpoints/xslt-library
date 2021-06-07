@@ -3,7 +3,6 @@ package com.offerready.xslt;
 import java.io.File;
 
 import com.offerready.xslt.ExcelGenerator.InputDecimalSeparator;
-import lombok.val;
 import org.w3c.dom.Element;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
@@ -21,7 +20,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
 
     public static @CheckForNull String parseOptionalDownloadFilename(@Nonnull Element outputDefnElement) throws ConfigurationException {
         String downloadFilename = null;
-        val downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
+        var downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
         if (downloadFilenameElement != null) {
             downloadFilename = downloadFilenameElement.getTextContent();
             if ( ! downloadFilename.matches("[\\w\\.\\-]+"))
@@ -45,8 +44,8 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             "content-type", "download-filename");
         
         final File xsltFileOrNull;
-        val xsltFileEl = getOptionalSingleSubElement(outputDefnElement, "xslt-file");
-        val xsltDirEl = getOptionalSingleSubElement(outputDefnElement, "xslt-directory");
+        var xsltFileEl = getOptionalSingleSubElement(outputDefnElement, "xslt-file");
+        var xsltDirEl = getOptionalSingleSubElement(outputDefnElement, "xslt-directory");
         if (xsltFileEl != null) {
             xsltFileOrNull = new File(templateContainerDirectory, getMandatoryAttribute(xsltFileEl, "name"));
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
@@ -57,10 +56,10 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
         } else xsltFileOrNull = null;
         
         String contentType = null;
-        val contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
+        var contentTypeElement = getOptionalSingleSubElement(outputDefnElement, "content-type");
         if (contentTypeElement != null) contentType = getMandatoryAttribute(contentTypeElement, "type");
         
-        val result = new DocumentOutputDefinition(new XsltParameters(outputDefnElement));
+        var result = new DocumentOutputDefinition(new XsltParameters(outputDefnElement));
         result.xsltFileOrNull = xsltFileOrNull;
         result.outputConversion =
             getSubElements(outputDefnElement, "convert-output-xml-to-json").size() > 0 ? OutputConversion.xmlToJson :
@@ -70,13 +69,13 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
             OutputConversion.none;
         result.contentType = contentType;
 
-        val excel = getOptionalSingleSubElement(outputDefnElement, "convert-output-xml-to-excel");
+        var excel = getOptionalSingleSubElement(outputDefnElement, "convert-output-xml-to-excel");
         if (excel != null) {
             // Deprecated, use input-decimal-separator attribute instead
             if (Boolean.parseBoolean(getOptionalAttribute(excel, "magic-numbers", "false")))
                 result.inputDecimalSeparator = InputDecimalSeparator.magic;
 
-            val style = getOptionalAttribute(excel, "input-decimal-separator");
+            var style = getOptionalAttribute(excel, "input-decimal-separator");
             if (style != null) result.inputDecimalSeparator = InputDecimalSeparator.valueOf(style);
         }
 

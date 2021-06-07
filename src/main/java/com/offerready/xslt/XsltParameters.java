@@ -2,7 +2,6 @@ package com.offerready.xslt;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.w3c.dom.Element;
 
 import javax.annotation.CheckForNull;
@@ -46,8 +45,8 @@ public class XsltParameters implements Serializable {
     }
     
     public @Nonnull Map<String, String> get(@CheckForNull String language) {
-        val result = new HashMap<String, String>(paramsForLanguage.get(""));
-        val lang = paramsForLanguage.get(language);
+        var result = new HashMap<String, String>(paramsForLanguage.get(""));
+        var lang = paramsForLanguage.get(language);
         if (lang != null) result.putAll(lang);
         return result;
     }
