@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
-
 public class ReCaptchaV3Client {
     
     protected final static String urlPattern =
@@ -36,7 +34,7 @@ public class ReCaptchaV3Client {
             var response = new ObjectMapper().readValue(new URL(urlExpanded), Response.class);
             if ( ! response.success) 
                 throw new RuntimeException(String.format("Response JSON contains: success=false; errorCodes=[%s]", 
-                    String.join(",", Optional.ofNullable(response.errorCodes).orElse(emptyList()))));
+                    String.join(",", Optional.ofNullable(response.errorCodes).orElse(List.of()))));
             return response.score;
         }
         catch (Exception e) {

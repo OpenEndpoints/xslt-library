@@ -1,6 +1,5 @@
 package com.offerready.xslt.config;
 
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -24,7 +23,7 @@ public class PrivilegeRestriction implements Serializable {
     }
 
     public static @Nonnull PrivilegeRestriction allowAny() {
-        return new PrivilegeRestriction(Type.AllBut, Collections.emptySet());
+        return new PrivilegeRestriction(Type.AllBut, Set.of());
     }
 
     public @Nonnull String toString() {
