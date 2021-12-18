@@ -20,7 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 import com.databasesandlife.util.Timer;
@@ -64,7 +64,7 @@ public class PostRequestClient {
                 postBody.writeToOutputStream(postRequest);
             }
             if (connection.getResponseCode() != HttpServletResponse.SC_OK) {
-                Logger.getLogger(getClass()).info("HTTP request to '" + url + 
+                LoggerFactory.getLogger(getClass()).info("HTTP request to '" + url + 
                     "' failed: " +connection.getResponseCode() + " " + connection.getResponseMessage());
                 throw new PostFailedException(connection.getResponseCode(), connection.getResponseMessage());
             }

@@ -4,7 +4,7 @@
 
     <groupId>com.offerready</groupId>
     <artifactId>xslt-library</artifactId>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
     <name>Offer-Ready XSLT Library</name>
     <description>Utility classes for XSLT processing used at Offer-Ready GmbH</description>
     <url>https://github.com/offer-ready/xslt-library</url>
@@ -47,9 +47,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.databasesandlife</groupId>
             <artifactId>java-common</artifactId>
-            <version>4.14.0</version>
+            <version>16.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -97,6 +97,18 @@
             <groupId>net.sourceforge.jexcelapi</groupId>
             <artifactId>jxl</artifactId>
             <version>2.6.12</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- for jxl which uses log4j 1 API -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

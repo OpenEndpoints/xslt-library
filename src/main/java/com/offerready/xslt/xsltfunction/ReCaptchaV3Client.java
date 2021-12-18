@@ -5,7 +5,7 @@ import com.databasesandlife.util.Timer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import java.net.URL;
@@ -38,7 +38,7 @@ public class ReCaptchaV3Client {
             return response.score;
         }
         catch (Exception e) {
-            Logger.getLogger(ReCaptchaV3Client.class).warn(
+            LoggerFactory.getLogger(ReCaptchaV3Client.class).warn(
                 "Exception occurred during ReCaptcha processing: returning -1 to XSLT", e);
             return -1;
         }

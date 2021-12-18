@@ -16,7 +16,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.databasesandlife.util.ThreadPool;
@@ -107,7 +107,7 @@ public class WeaklyCachedXsltTransformer {
                 if (errorString.length() > 0) error = nameForLogging + ": " + errorString.toString();
                 else error = nameForLogging + ": " + exception.getMessage();
                 
-                Logger.getLogger(getClass()).error(error, exception);
+                LoggerFactory.getLogger(getClass()).error(error, exception);
             }
             
             cache.put(md5, new WeakReference<WeaklyCachedXsltTransformer>(WeaklyCachedXsltTransformer.this));
