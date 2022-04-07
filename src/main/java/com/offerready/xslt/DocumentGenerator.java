@@ -174,12 +174,12 @@ public class DocumentGenerator {
      * @param uriResolverOrNull if not null, pass an object which can, for example, fetch or create images via programmatic logic
      * @param language for example "de" to choose different XSLT params (placeholder values). Or null to just use the default.
      */
-    @SneakyThrows({TransformerException.class, IOException.class})
+    @SneakyThrows(IOException.class)
     public void transform(
         @Nonnull DocumentGenerationDestination response, @Nonnull Document xml,
         boolean transform, @CheckForNull URIResolver uriResolverOrNull,
         @CheckForNull String language
-    ) throws DocumentTemplateInvalidException {
+    ) throws DocumentTemplateInvalidException, TransformerException {
         if (transform == false) {
             writePlainXml(response, xml);
             return;
