@@ -93,7 +93,7 @@ public class WeaklyCachedXsltTransformer {
                 public void fatalError(TransformerException e) { errorString.append("\nFATAL: ").append(e.getMessage()); }
             };
 
-            try (var t = new Timer("Compiling XSLT '" + nameForLogging + "'")) {
+            try (var ignored = new Timer("Compiling XSLT '" + nameForLogging + "'")) {
                 var transformerFactory = (TransformerFactoryImpl) TransformerFactory.newInstance(
                     TransformerFactoryImpl.class.getName(), DocumentGenerator.class.getClassLoader());
                 transformerFactory.setErrorListener(errorListener);
@@ -117,7 +117,7 @@ public class WeaklyCachedXsltTransformer {
     public static class XsltCompilationThreads extends ThreadPool {
         final Map<String, WeaklyCachedXsltTransformer> toCompileForXsltMd5 = new HashMap<>();
         @Override public void execute() {
-            try (var t = new Timer(threadNamePrefix)) {
+            try (var ignored = new Timer(threadNamePrefix)) {
                 super.execute(); 
             }
         }

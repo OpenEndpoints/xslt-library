@@ -142,7 +142,7 @@ public class DocumentGenerator {
 
     @SneakyThrows({TransformerException.class, IOException.class, SAXException.class})
     protected void writePdfFromXslFo(@Nonnull OutputStream pdf, @Nonnull Document fo, @CheckForNull URIResolver uriResolverOrNull) {
-        try (var t = new Timer("Create PDF from XSL-FO")) {
+        try (var ignored = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
             var fopFactory = FopFactory.newInstance();
             if (fopBaseDirOrNull != null) fopFactory.setFontBaseURL(fopBaseDirOrNull.toURI().toString());
@@ -193,7 +193,9 @@ public class DocumentGenerator {
             case xmlToJson:
                 response.setContentType((defn.contentType == null ? "application/json" : defn.contentType) + "; charset=UTF-8");
                 var xmlOutput = new StringWriter();
-                try (var t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); }
+                try (var ignored = new Timer("XSLT Transformation")) { 
+                    xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); 
+                }
                 var json = XML.toJSONObject(xmlOutput.toString());
                 try (var outputStream = response.getOutputStream()) {
                     outputStream.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -203,7 +205,9 @@ public class DocumentGenerator {
             case xslFoToPdf:
                 response.setContentType(defn.contentType == null ? "application/pdf" : defn.contentType);
                 var xslFo = new DOMResult();
-                try (var t = new Timer("XSLT Transformation to XSL-FO")) { xslt.transform(new DOMSource(xml), xslFo); }
+                try (var ignored = new Timer("XSLT Transformation to XSL-FO")) {
+                    xslt.transform(new DOMSource(xml), xslFo); 
+                }
                 try (var outputStream = response.getOutputStream()) {
                     writePdfFromXslFo(outputStream, (Document) xslFo.getNode(), uriResolverOrNull);
                 }
@@ -221,7 +225,7 @@ public class DocumentGenerator {
                 try (var outputStream = response.getOutputStream()) {
                     var result = new StreamResult(outputStream);
                     xslt.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
-                    try (var t = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
+                    try (var ignored = new Timer("XSLT Transformation")) { xslt.transform(new DOMSource(xml), result); }
                 }
                 break;
         }

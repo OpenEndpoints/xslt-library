@@ -74,7 +74,7 @@ public class HtmlBodyExtractor {
     }
     
     public @Nonnull String extractBody(@Nonnull String htmlText) {
-        try (var t = new Timer("HtmlBodyExtractor.extractBody")) {
+        try (var ignored = new Timer("HtmlBodyExtractor.extractBody")) {
             var result  = new StringBuilder();  // 2.5 seconds at 1k iterations on i3
             var ranges = new ArrayList<Range>();
             

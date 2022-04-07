@@ -23,7 +23,7 @@ public class SecurityParser extends DomParser {
     /** @return not empty */
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
-        try (var t = new Timer("parse-security-xml")) {
+        try (var ignored = new Timer("parse-security-xml")) {
             var doc = DomParser.newDocumentBuilder().parse(i);
 
             var root = doc.getDocumentElement();
