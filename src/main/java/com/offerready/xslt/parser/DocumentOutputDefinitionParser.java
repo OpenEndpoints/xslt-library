@@ -1,5 +1,6 @@
 package com.offerready.xslt.parser;
 
+import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import com.offerready.xslt.DocumentOutputDefinition;
 import com.offerready.xslt.DocumentOutputDefinition.OutputConversion;
@@ -14,7 +15,7 @@ import java.io.File;
 /**
  * Parsers which parses document-definition files for any XSLT-style document generation application.
  */
-public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
+public class DocumentOutputDefinitionParser extends DomParser {
 
     public static @CheckForNull String parseOptionalDownloadFilename(@Nonnull Element outputDefnElement) throws ConfigurationException {
         String downloadFilename = null;
