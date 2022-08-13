@@ -1,17 +1,15 @@
-package com.offerready.xslt;
-
-import java.io.File;
-
-import com.offerready.xslt.ExcelGenerator.InputDecimalSeparator;
-import org.w3c.dom.Element;
+package com.offerready.xslt.parser;
 
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
-import com.offerready.xslt.config.OfferReadyDomParser;
+import com.offerready.xslt.DocumentOutputDefinition;
 import com.offerready.xslt.DocumentOutputDefinition.OutputConversion;
+import com.offerready.xslt.ExcelGenerator.InputDecimalSeparator;
+import com.offerready.xslt.XsltParameters;
+import org.w3c.dom.Element;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
+import java.io.File;
 
 /**
  * Parsers which parses document-definition files for any XSLT-style document generation application.
@@ -34,7 +32,7 @@ public class DocumentOutputDefinitionParser extends OfferReadyDomParser {
     /**
      * @param templateContainerDirectory the directory which will contain "xyz/report.xslt" for "xslt-directory"="xyz"
      */
-    protected static DocumentOutputDefinition parseOutputDefinition(
+    public static @Nonnull DocumentOutputDefinition parseDocumentOutputDefinition(
         @Nonnull File templateContainerDirectory, @Nonnull Element outputDefnElement
     ) throws ConfigurationException {
         // xslt-directory is legacy, prefer xslt-file

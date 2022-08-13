@@ -1,4 +1,4 @@
-package com.offerready.xslt;
+package com.offerready.xslt.destination;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -6,9 +6,6 @@ import java.io.OutputStream;
 
 /**
  * Documents (= XSLT Reports) can be generated to a "destination".
- *  <p>
- * An example of a "destination" is a {@link StreamingHttpResponseDocumentGenerationDestination} which allows
- * a document to be streamed to an HTTP response. 
  *  <p>
  * A "destination" must be capable of having:
  * <ul>

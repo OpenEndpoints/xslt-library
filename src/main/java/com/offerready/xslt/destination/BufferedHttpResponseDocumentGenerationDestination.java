@@ -1,16 +1,19 @@
-package com.offerready.xslt;
-
-import java.io.IOException;
-import java.net.URL;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletResponse;
+package com.offerready.xslt.destination;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URL;
+
+/**
+ * Stores the result of a transformation inside the object, in a form suitable for delivering to an
+ * {@link HttpServletResponse} via the {@link #deliver(HttpServletResponse)} method.
+ */
 public class BufferedHttpResponseDocumentGenerationDestination extends BufferedDocumentGenerationDestination {
 
     protected @Getter int statusCode = HttpServletResponse.SC_OK;

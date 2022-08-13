@@ -1,14 +1,16 @@
-package com.offerready.xslt;
+package com.offerready.xslt.destination;
 
 import lombok.SneakyThrows;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 
+/**
+ * Streams the result of a transformation directly to an {@link HttpServletResponse}.
+ */
 public class StreamingHttpResponseDocumentGenerationDestination implements DocumentGenerationDestination {
     
     protected @Nonnull HttpServletResponse response;

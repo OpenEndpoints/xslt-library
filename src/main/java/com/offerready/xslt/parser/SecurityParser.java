@@ -1,16 +1,13 @@
-package com.offerready.xslt.config;
+package com.offerready.xslt.parser;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.databasesandlife.util.DomParser;

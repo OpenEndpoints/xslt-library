@@ -1,4 +1,4 @@
-package com.offerready.xslt;
+package com.offerready.xslt.destination;
 
 import lombok.Getter;
 
@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
+/**
+ * Rather than streaming the output, this stores the result in itself so it can be accessed multiple times.
+ */
 public class BufferedDocumentGenerationDestination implements DocumentGenerationDestination {
 
     protected @Getter String contentType;

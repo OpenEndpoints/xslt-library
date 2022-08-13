@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
+import com.offerready.xslt.destination.DocumentGenerationDestination;
 import lombok.SneakyThrows;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;

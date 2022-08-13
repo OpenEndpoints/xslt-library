@@ -1,4 +1,4 @@
-package com.offerready.xslt;
+package com.offerready.xslt.destination;
 
 import lombok.SneakyThrows;
 

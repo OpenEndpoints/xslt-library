@@ -1,4 +1,6 @@
-package com.offerready.xslt.config;
+package com.offerready.xslt.parser;
+
+import com.offerready.xslt.Privilege;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;

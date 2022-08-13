@@ -1,11 +1,8 @@
-package com.offerready.xslt.config;
+package com.offerready.xslt.parser;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import com.offerready.xslt.Privilege;
 import org.w3c.dom.Element;
 
 import com.databasesandlife.util.DomParser;

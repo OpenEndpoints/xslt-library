@@ -1,4 +1,4 @@
-package com.offerready.xslt.config;
+package com.offerready.xslt;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Data;

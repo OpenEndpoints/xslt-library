@@ -1,10 +1,6 @@
-package com.offerready.xslt;
+package com.offerready.xslt.destination;
 
 import lombok.SneakyThrows;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -14,6 +10,9 @@ import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class EmailPartDocumentDestination extends BufferedDocumentGenerationDestination {
 
