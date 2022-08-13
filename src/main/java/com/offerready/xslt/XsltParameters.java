@@ -35,7 +35,7 @@ public class XsltParameters implements Serializable {
     throws ConfigurationException {
         paramsForLanguage = new HashMap<>();
         paramsForLanguage.put("", new HashMap<>());
-        for (Element p : getSubElements(outputDefnElement, "placeholder-value")) {
+        for (var p : getSubElements(outputDefnElement, "placeholder-value")) {
             String key = getMandatoryAttribute(p, "placeholder-name");
             String value = getMandatoryAttribute(p, "value");
             String language = getOptionalAttribute(p, "language", "");
@@ -45,7 +45,7 @@ public class XsltParameters implements Serializable {
     }
     
     public @Nonnull Map<String, String> get(@CheckForNull String language) {
-        var result = new HashMap<String, String>(paramsForLanguage.get(""));
+        var result = new HashMap<>(paramsForLanguage.get(""));
         var lang = paramsForLanguage.get(language);
         if (lang != null) result.putAll(lang);
         return result;
