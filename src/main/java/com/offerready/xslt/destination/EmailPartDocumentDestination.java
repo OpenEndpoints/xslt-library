@@ -1,15 +1,15 @@
 package com.offerready.xslt.destination;
 
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.mail.BodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Part;
+import jakarta.mail.internet.MimeBodyPart;
 import lombok.SneakyThrows;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Part;
-import javax.mail.internet.MimeBodyPart;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
