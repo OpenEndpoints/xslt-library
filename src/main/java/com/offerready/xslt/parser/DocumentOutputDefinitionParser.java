@@ -37,11 +37,6 @@ public class DocumentOutputDefinitionParser extends DomParser {
         @Nonnull File templateContainerDirectory, @Nonnull Element outputDefnElement
     ) throws ConfigurationException {
         // xslt-directory is legacy, prefer xslt-file
-        assertNoOtherElements(outputDefnElement, 
-            "xslt-file", "xslt-directory", "placeholder-value", "convert-output-xml-to-json",
-            "convert-output-xml-fo-to-pdf", "convert-output-xsl-fo-to-pdf", "convert-output-xml-to-excel", 
-            "content-type", "download-filename");
-        
         final File xsltFileOrNull;
         var xsltFileEl = getOptionalSingleSubElement(outputDefnElement, "xslt-file");
         var xsltDirEl = getOptionalSingleSubElement(outputDefnElement, "xslt-directory");
