@@ -181,7 +181,7 @@ public class DocumentGenerator {
         boolean transform, @CheckForNull URIResolver uriResolverOrNull,
         @CheckForNull String language
     ) throws DocumentTemplateInvalidException, TransformerException {
-        if (transform == false) {
+        if ( ! transform) {
             writePlainXml(response, xml);
             return;
         }

@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  * Extracts the body of an HTML report document.
  *    <p>
  * An "HTML document generator" generates HTML, suitable for viewing in a browser, or inclusion in an iframe. 
- * However this HTML contains e.g. &lt;html&gt; tags which are not suitable for display within a &lt;div&gt;.
+ * However, this HTML contains e.g. &lt;html&gt; tags which are not suitable for display within a &lt;div&gt;.
  * Objects of this class extract the relevant information from the HTML document, and return an HTML
  * string suitable for inclusion in a &lt;div&gt;.
  *    <p>
@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
  */
 public class HtmlBodyExtractor {
     
-    protected List<String> scriptsToIgnore = new ArrayList<String>();
+    protected List<String> scriptsToIgnore = new ArrayList<>();
     
     protected static class Range {
         int startIncl, endExcl;

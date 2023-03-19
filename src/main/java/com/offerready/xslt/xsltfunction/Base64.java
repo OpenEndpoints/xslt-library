@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@SuppressWarnings("unused") // These are used by XSLT code
 public class Base64 {
     
     public static @Nonnull String encode(@Nonnull String input) {

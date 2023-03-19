@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("unused") // These are used by XSLT code
 public class ReCaptchaV3Client {
     
     protected final static String urlPattern =

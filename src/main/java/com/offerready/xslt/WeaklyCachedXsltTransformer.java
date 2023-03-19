@@ -23,7 +23,6 @@ import com.databasesandlife.util.ThreadPool;
 import com.databasesandlife.util.Timer;
 
 import net.sf.saxon.TransformerFactoryImpl;
-import org.xml.sax.SAXException;
 
 /**
  * Wraps an XSLT {@link Templates} capable of performing an XSLT transformation.
@@ -40,7 +39,6 @@ import org.xml.sax.SAXException;
  * In this case, the desired behaviour is that all other valid XSLTs can be applied, so no exception is thrown upon compilation.
  * The method {@link #assertValid()} returns void if the template is OK and throws the DocumentTemplateInvalidException otherwise.
  */
-@SuppressWarnings("serial")
 public class WeaklyCachedXsltTransformer {
     
     private static final Map<String, WeakReference<WeaklyCachedXsltTransformer>> cache = new HashMap<>();
@@ -104,13 +102,13 @@ public class WeaklyCachedXsltTransformer {
                 };
             }
             catch (Exception exception) {
-                if (errorString.length() > 0) error = nameForLogging + ": " + errorString.toString();
+                if (errorString.length() > 0) error = nameForLogging + ": " + errorString;
                 else error = nameForLogging + ": " + exception.getMessage();
                 
                 LoggerFactory.getLogger(getClass()).error(error, exception);
             }
             
-            cache.put(md5, new WeakReference<WeaklyCachedXsltTransformer>(WeaklyCachedXsltTransformer.this));
+            cache.put(md5, new WeakReference<>(WeaklyCachedXsltTransformer.this));
         }
     }
     

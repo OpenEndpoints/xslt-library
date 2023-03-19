@@ -30,7 +30,7 @@ public class StreamingHttpResponseDocumentGenerationDestination implements Docum
         if (filename == null) {
             response.setHeader("content-disposition", "attachment");
         } else {
-            if ( ! filename.matches("[\\w\\.\\-]+")) throw new RuntimeException("Filename '" + filename + "' invalid");
+            if ( ! filename.matches("[\\w.\\-]+")) throw new RuntimeException("Filename '" + filename + "' invalid");
             response.setHeader("content-disposition", "attachment; filename=\"" + filename + "\"");
         }
     }

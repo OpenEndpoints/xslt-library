@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 /**
- * Rather than streaming the output, this stores the result in itself so it can be accessed multiple times.
+ * Rather than streaming the output, this stores the result in itself, so it can be accessed multiple times.
  */
 public class BufferedDocumentGenerationDestination implements DocumentGenerationDestination {
 

@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +16,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jxl.Workbook;
-import jxl.biff.DisplayFormat;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -151,7 +149,7 @@ public class ExcelGenerator extends DefaultHandler {
 
     // Intermediate store of values
     protected int nextRowInExcel = 0;
-    protected @Nonnull List<Integer> maxCharsSeenInColumn = new ArrayList<Integer>();
+    protected @Nonnull List<Integer> maxCharsSeenInColumn = new ArrayList<>();
     protected List<List<CellFromHtml>> currentHeadMatrix=null, currentFootMatrix=null, currentBodyMatrix=null, currentMatrix=null;
     protected List<CellFromHtml> currentRow=null;
     protected CellFromHtml currentCell=null;
@@ -182,7 +180,7 @@ public class ExcelGenerator extends DefaultHandler {
         StringBuilder f = new StringBuilder("#,##0");
         if (decimalPlaces > 0) {
             f.append(".");
-            for (int i = 0; i < decimalPlaces; i++) f.append("0");
+            f.append("0".repeat(decimalPlaces));
         }
         return f.toString();
     }
@@ -205,7 +203,7 @@ public class ExcelGenerator extends DefaultHandler {
                     var cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
                     var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
                     excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format);
-                    columnWidthChars = String.format("%."+decimalPlaces+"f", ((Double) cellValue)).length();
+                    columnWidthChars = String.format("%."+decimalPlaces+"f", cellValue).length();
                 } else if (cellValue instanceof String) {
                     var cellAndNumberFormat = new CellAndNumberFormat(cell.format, null);
                     var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
@@ -225,7 +223,7 @@ public class ExcelGenerator extends DefaultHandler {
         }
     }
     
-    @Override public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    @Override public void startElement(String uri, String localName, String qName, Attributes attributes) {
         if ("table".equals(qName)) {
             tableDepth++;
             if (tableDepth == 1) {
@@ -259,7 +257,7 @@ public class ExcelGenerator extends DefaultHandler {
         }
     }
   
-    @Override public void endElement(String uri, String localName, String qName) throws SAXException {
+    @Override public void endElement(String uri, String localName, String qName) {
         if ("table".equals(qName)) {
             if (tableDepth == 1) {
                 writeMatrixToExcel(currentHeadMatrix);
@@ -292,7 +290,7 @@ public class ExcelGenerator extends DefaultHandler {
     }
     
     @Override
-    public void startDocument() throws SAXException {
+    public void startDocument() {
         timer = new Timer("Create XLS from XML");
     }
     

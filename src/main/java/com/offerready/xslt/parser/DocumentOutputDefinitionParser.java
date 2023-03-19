@@ -22,7 +22,7 @@ public class DocumentOutputDefinitionParser extends DomParser {
         var downloadFilenameElement = getOptionalSingleSubElement(outputDefnElement, "download-filename");
         if (downloadFilenameElement != null) {
             downloadFilename = downloadFilenameElement.getTextContent();
-            if ( ! downloadFilename.matches("[\\w\\.\\-]+"))
+            if ( ! downloadFilename.matches("[\\w.\\-]+"))
                 throw new ConfigurationException("<download-filename>" + downloadFilename + "</download-filename> is invalid: " +
                     "only A-Z, a-z, 0-9, '_', '-', '.' are allowed, due to problems with inexact HTTP specification " +
                     "w.r.t. character sets and download file names");

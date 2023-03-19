@@ -17,7 +17,7 @@ import static com.databasesandlife.util.DomParser.getSubElements;
 /**
  * These are passed to the XSLT processor when the XSLT is executed.
  *    <p>
- * These are taken from <code>&lt;placeholder-value placeholder-name="CostPerUserAlertTreshold" value="10"/&gt;</code>
+ * These are taken from <code>&lt;placeholder-value placeholder-name="foo" value="10"/&gt;</code>
  * entries in the configuration file.
  *    <p>
  * These can have localized versions for different languages.

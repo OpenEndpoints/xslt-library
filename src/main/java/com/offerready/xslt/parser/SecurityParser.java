@@ -18,6 +18,7 @@ import com.databasesandlife.util.gwtsafe.ConfigurationException;
 public class SecurityParser extends DomParser {
 
     /** @return not empty */
+    @SuppressWarnings("TryWithIdenticalCatches") 
     public static @Nonnull String[] parse(@Nonnull InputStream i)
     throws ConfigurationException {
         try (var ignored = new Timer("parse-security-xml")) {

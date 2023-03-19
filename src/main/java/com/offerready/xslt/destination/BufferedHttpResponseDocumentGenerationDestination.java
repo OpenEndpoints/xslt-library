@@ -31,7 +31,7 @@ public class BufferedHttpResponseDocumentGenerationDestination extends BufferedD
 
     @Override
     public void setContentDispositionToDownload(@CheckForNull String filename) {
-        if (filename != null && ! filename.matches("[\\w\\.\\-]+")) throw new RuntimeException("Filename '" + filename + "' invalid");
+        if (filename != null && ! filename.matches("[\\w.\\-]+")) throw new RuntimeException("Filename '" + filename + "' invalid");
         super.setContentDispositionToDownload(filename);
     }
 

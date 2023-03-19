@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class StringDocumentDestination extends BufferedDocumentGenerationDestination {
     
     protected final Pattern charsetSuffix = Pattern.compile("; charset=utf-8", Pattern.CASE_INSENSITIVE);
@@ -22,9 +24,8 @@ public class StringDocumentDestination extends BufferedDocumentGenerationDestina
     }
     
     @Override
-    @SneakyThrows(UnsupportedEncodingException.class)
     public String toString() {
         assertValid();
-        return body.toString(StandardCharsets.UTF_8.name());
+        return body.toString(UTF_8);
     }
 }

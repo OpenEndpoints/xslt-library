@@ -7,10 +7,9 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class DocumentOutputDefinition implements Serializable {
 
-    public enum OutputConversion { none, xmlToJson, xslFoToPdf, excelXmlToExcelBinary };
+    public enum OutputConversion { none, xmlToJson, xslFoToPdf, excelXmlToExcelBinary }
     
     public @CheckForNull File xsltFileOrNull;
     public @Nonnull XsltParameters xsltParameters;

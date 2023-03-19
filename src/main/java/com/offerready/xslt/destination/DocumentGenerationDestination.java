@@ -15,11 +15,11 @@ import java.io.OutputStream;
  */
 public interface DocumentGenerationDestination {
     
-    public void setContentType(@Nonnull String contentType);
+    void setContentType(@Nonnull String contentType);
 
     /** @param filename can be null indicating no particular filename is preferred */
-    public void setContentDispositionToDownload(@CheckForNull String filename);
+    void setContentDispositionToDownload(@CheckForNull String filename);
     
-    public @Nonnull OutputStream getOutputStream();
+    @Nonnull OutputStream getOutputStream();
 
 }
