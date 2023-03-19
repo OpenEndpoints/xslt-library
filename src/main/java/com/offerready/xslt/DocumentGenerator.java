@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
@@ -22,8 +23,9 @@ import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import com.offerready.xslt.destination.DocumentGenerationDestination;
 import lombok.SneakyThrows;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
+import org.apache.fop.apps.*;
+import org.apache.fop.apps.io.ResourceResolverFactory;
+import org.apache.xmlgraphics.io.URIResolverAdapter;
 import org.json.XML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -145,12 +147,21 @@ public class DocumentGenerator {
     protected void writePdfFromXslFo(@Nonnull OutputStream pdf, @Nonnull Document fo, @CheckForNull URIResolver uriResolverOrNull) {
         try (var ignored = new Timer("Create PDF from XSL-FO")) {
             // Get a FOP instance (can convert XSL-FO into PDF)
-            var fopFactory = FopFactory.newInstance();
-            if (fopBaseDirOrNull != null) fopFactory.setFontBaseURL(fopBaseDirOrNull.toURI().toString());
-            if (fopConfigOrNull != null) fopFactory.setUserConfig(fopConfigOrNull);
+            FopFactoryBuilder builder;
+            if (fopConfigOrNull != null) {
+                FopConfParser parser;
+                if (uriResolverOrNull == null) parser = new FopConfParser(fopConfigOrNull);
+                else parser = new FopConfParser(fopConfigOrNull, new URIResolverAdapter(uriResolverOrNull));
+                builder = parser.getFopFactoryBuilder();
+            } else {
+                if (uriResolverOrNull == null) builder = new FopFactoryBuilder(URI.create("/"));
+                else builder = new FopFactoryBuilder(URI.create("/"), new URIResolverAdapter(uriResolverOrNull));
+            }
+            if (imagesBase != null) builder.setBaseURI(imagesBase.toURI());
+            var fopFactory = builder.build();
+            if (fopBaseDirOrNull != null) fopFactory.getFontManager().setResourceResolver(
+                ResourceResolverFactory.createDefaultInternalResourceResolver(fopBaseDirOrNull.toURI()));
             var foUserAgent = fopFactory.newFOUserAgent();
-            if (imagesBase != null) foUserAgent.setBaseURL(imagesBase.toURI().toString());
-            if (uriResolverOrNull != null) foUserAgent.setURIResolver(uriResolverOrNull);
             var fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
 
             // Setup JAXP using identity transformer
