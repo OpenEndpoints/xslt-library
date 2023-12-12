@@ -1,10 +1,6 @@
 package com.offerready.xslt.destination;
 
-import lombok.SneakyThrows;
-
 import javax.annotation.Nonnull;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

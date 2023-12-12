@@ -1,28 +1,20 @@
 package com.offerready.xslt;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-
+import com.databasesandlife.util.ThreadPool;
+import com.databasesandlife.util.Timer;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
 import lombok.SneakyThrows;
+import net.sf.saxon.TransformerFactoryImpl;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.databasesandlife.util.ThreadPool;
-import com.databasesandlife.util.Timer;
-
-import net.sf.saxon.TransformerFactoryImpl;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Wraps an XSLT {@link Templates} capable of performing an XSLT transformation.

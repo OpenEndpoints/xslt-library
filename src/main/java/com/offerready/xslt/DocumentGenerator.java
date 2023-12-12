@@ -1,12 +1,23 @@
 package com.offerready.xslt;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
+import com.databasesandlife.util.DomParser;
+import com.databasesandlife.util.MD5Hex;
+import com.databasesandlife.util.Timer;
+import com.databasesandlife.util.gwtsafe.ConfigurationException;
+import com.offerready.xslt.WeaklyCachedXsltTransformer.DocumentTemplateInvalidException;
+import com.offerready.xslt.WeaklyCachedXsltTransformer.Xslt;
+import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
+import com.offerready.xslt.destination.DocumentGenerationDestination;
+import lombok.SneakyThrows;
+import org.apache.fop.apps.FopConfParser;
+import org.apache.fop.apps.FopFactoryBuilder;
+import org.apache.fop.apps.MimeConstants;
+import org.apache.fop.apps.io.ResourceResolverFactory;
+import org.apache.xmlgraphics.io.URIResolverAdapter;
+import org.json.XML;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -18,24 +29,13 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
-
-import com.databasesandlife.util.DomParser;
-import com.databasesandlife.util.gwtsafe.ConfigurationException;
-import com.offerready.xslt.destination.DocumentGenerationDestination;
-import lombok.SneakyThrows;
-import org.apache.fop.apps.*;
-import org.apache.fop.apps.io.ResourceResolverFactory;
-import org.apache.xmlgraphics.io.URIResolverAdapter;
-import org.json.XML;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import com.databasesandlife.util.MD5Hex;
-import com.databasesandlife.util.Timer;
-import com.offerready.xslt.WeaklyCachedXsltTransformer.DocumentTemplateInvalidException;
-import com.offerready.xslt.WeaklyCachedXsltTransformer.Xslt;
-import com.offerready.xslt.WeaklyCachedXsltTransformer.XsltCompilationThreads;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 /**
  * An object capable of generating a document for a particular XSLT file.

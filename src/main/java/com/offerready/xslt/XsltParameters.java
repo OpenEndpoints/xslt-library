@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.databasesandlife.util.DomParser.getMandatoryAttribute;
-import static com.databasesandlife.util.DomParser.getOptionalAttribute;
-import static com.databasesandlife.util.DomParser.getSubElements;
+import static com.databasesandlife.util.DomParser.*;
 
 /**
  * These are passed to the XSLT processor when the XSLT is executed.

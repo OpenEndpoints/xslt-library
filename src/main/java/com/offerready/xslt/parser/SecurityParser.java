@@ -1,18 +1,17 @@
 package com.offerready.xslt.parser;
 
+import com.databasesandlife.util.DomParser;
+import com.databasesandlife.util.Timer;
+import com.databasesandlife.util.gwtsafe.ConfigurationException;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import javax.annotation.Nonnull;
-
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import com.databasesandlife.util.DomParser;
-import com.databasesandlife.util.Timer;
-import com.databasesandlife.util.gwtsafe.ConfigurationException;
 
 /** Parses XML which has &lt;security&gt; containing a set of &lt;secret-key&gt; elements. */
 public class SecurityParser extends DomParser {
