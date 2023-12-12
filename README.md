@@ -43,7 +43,8 @@ In addition, the following elements may be present:
   
   Previously this tag was called `<convert-output-xml-fo-to-pdf/>` and this tag is still supported.
   
-* `<convert-output-xml-to-json/>`. The result of the transformation is assumed to be XML and it is converted to JSON. The content type "application/json" is set.
+* `<convert-output-xml-to-json/>`. The result of the transformation is assumed to be XML and it is converted to JSON. The content type `application/json` is set.
+  In the case that an XML tag has attributes and a text content, a JSON object is created with the attributes as keys, and a special key `_content` to contain the XML text content.
   
 * `<convert-output-xml-to-excel>`. If present, the output of the XSLT is assumed to be HTML. See below for more information. The content type "application/ms-excel" is used.
 

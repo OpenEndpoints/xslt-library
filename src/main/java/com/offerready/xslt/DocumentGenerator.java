@@ -14,7 +14,6 @@ import org.apache.fop.apps.FopFactoryBuilder;
 import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.apps.io.ResourceResolverFactory;
 import org.apache.xmlgraphics.io.URIResolverAdapter;
-import org.json.XML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -208,9 +207,9 @@ public class DocumentGenerator {
                 try (var ignored = new Timer("XSLT Transformation")) { 
                     xslt.transform(new DOMSource(xml), new StreamResult(xmlOutput)); 
                 }
-                var json = XML.toJSONObject(xmlOutput.toString());
+                var json = new JsonXmlConverter().convertXmlToJson(xmlOutput.toString());
                 try (var outputStream = response.getOutputStream()) {
-                    outputStream.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
+                    outputStream.write(json.getBytes(StandardCharsets.UTF_8));
                 }
                 break;
 
