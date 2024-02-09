@@ -2,7 +2,7 @@ Utilities for OpenEndpoints XSLT software.
 
 To build:
 
-    export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+    export JAVA_HOME=$(/usr/libexec/java_home -v 17)
     mvn clean install
 
 Contributions are welcome. Please open an issue describing what you wish to achieve. We will be able to help you with advice, before you invest the time of development. When you've developed your patch, please submit a pull request using github.
@@ -77,4 +77,3 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
 * The contents of any `<script>` elements are ignored
 * The contents of any other tags such as `<span>` and `<div>` are included.
 * Table rows which contain only table cells which contain no text are ignored. (Often such rows contain sub-tables, which themselves are ignored. Having empty rows doesn't look nice.) 
-

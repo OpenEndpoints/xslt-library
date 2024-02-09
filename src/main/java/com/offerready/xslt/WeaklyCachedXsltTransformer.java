@@ -94,7 +94,7 @@ public class WeaklyCachedXsltTransformer {
                 };
             }
             catch (Exception exception) {
-                if (errorString.length() > 0) error = nameForLogging + ": " + errorString;
+                if (!errorString.isEmpty()) error = nameForLogging + ": " + errorString;
                 else error = nameForLogging + ": " + exception.getMessage();
                 
                 LoggerFactory.getLogger(getClass()).error(error, exception);

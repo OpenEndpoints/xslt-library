@@ -14,7 +14,6 @@ import java.util.stream.StreamSupport;
 import static com.databasesandlife.util.DomParser.newDocumentBuilder;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.regex.Matcher.quoteReplacement;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -56,7 +55,7 @@ public class JsonXmlConverter {
         else if (input instanceof JSONArray) 
             return new JSONArray(StreamSupport.stream(((JSONArray) input).spliterator(), false)
                 .map(e -> makeKeysInJsonSafeForXml(e))
-                .collect(toList()));
+                .toList());
         else return input;
     }
 

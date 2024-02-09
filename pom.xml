@@ -4,7 +4,7 @@
 
     <groupId>com.offerready</groupId>
     <artifactId>xslt-library</artifactId>
-    <version>8.3.2</version>
+    <version>9.0.0</version>
     <name>Offer-Ready XSLT Library</name>
     <description>Utility classes for XSLT processing used at Offer-Ready GmbH</description>
     <url>https://github.com/offer-ready/xslt-library</url>
@@ -29,8 +29,8 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.30</version>
             <scope>provided</scope>  <!-- only does compile-type stuff -->
         </dependency>
         <dependency>
@@ -141,10 +141,10 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>3.1.11</version>
+                <version>4.8.3.0</version>
                 <configuration>
                     <effort>Max</effort>
-                    <threshold>Medium</threshold>
+                    <threshold>High</threshold>
                     <xmlOutput>true</xmlOutput>
                     <includeTests>true</includeTests>
                 </configuration>
@@ -198,7 +198,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>

@@ -33,6 +33,7 @@ public class DocumentOutputDefinitionParser extends DomParser {
     /**
      * @param templateContainerDirectory the directory which will contain "xyz/report.xslt" for "xslt-directory"="xyz"
      */
+    @SuppressWarnings("SizeReplaceableByIsEmpty")
     public static @Nonnull DocumentOutputDefinition parseDocumentOutputDefinition(
         @Nonnull File templateContainerDirectory, @Nonnull Element outputDefnElement
     ) throws ConfigurationException {
