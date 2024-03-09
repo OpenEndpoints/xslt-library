@@ -153,8 +153,8 @@ public class DocumentGenerator {
                 else parser = new FopConfParser(fopConfigOrNull, new URIResolverAdapter(uriResolverOrNull));
                 builder = parser.getFopFactoryBuilder();
             } else {
-                if (uriResolverOrNull == null) builder = new FopFactoryBuilder(URI.create("/"));
-                else builder = new FopFactoryBuilder(URI.create("/"), new URIResolverAdapter(uriResolverOrNull));
+                if (uriResolverOrNull == null) builder = new FopFactoryBuilder(URI.create("https://www.example.com/"));
+                else builder = new FopFactoryBuilder(URI.create("https://www.example.com/"), new URIResolverAdapter(uriResolverOrNull));
             }
             if (imagesBase != null) builder.setBaseURI(imagesBase.toURI());
             var fopFactory = builder.build();
