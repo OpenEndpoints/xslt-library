@@ -54,15 +54,16 @@ The tag `<content-type type="text/html"/>` may be present. If present, you may s
 
 HTML to Excel conversion
 ------------------------
-If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is converted to Excel binary format. The format is chosen to be as similar to XHTML as possible. The syntax is as follows: 
+If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is converted to Excel binary format: 
 
-* HTML should contain `<table>` elements. 
+* The input XML should be an HTML (or XHTML) document.
+* The processor looks for `<table>` elements within that HTML. Any elements outside of `<table>` are ignored.
 * These should contain `<tr>` elements and within them `<td>` (or `<th>`) elements. 
-* Excel files differentiate between "text cells" and "number cells". The contents of the `<td>` are inspected to see if they look like a number, in which case an Excel "number cell" is produced, otherwise an Excel "text cell" is produced.
-* The attribute `<convert-output-xml-to-excel input-decimal-separator="xxx">` affects how numbers in the input HTML document are parsed.
-  * "dot" (default). Decimal separator is ".", thousand separator is ",".
-  * "comma". Decimal separator is ",", thousand separator is ".".
-  * "magic". Numbers may use either dot or comma as thousand or decimal separator, or the Swiss format 1'234.45. Heuristics are used to determine which system is in use. (This is useful in very broken input documents that use dot for some numbers and comma for others, within the same document.) The numbers must either have zero decimal (e.g. "1,024") or two decimal places (e.g. "12,34"). Any other number of decimal places in the input data will lead to wrong results. 
+* Although this isn't really obvious in Excel's UI, the Excel file format differentiates between "text cells" and "number cells". The contents of the `<td>` are inspected to see if they look like a number, in which case an Excel file "number cell" is produced, otherwise an Excel file "text cell" is produced.
+* The attribute `<convert-output-xml-to-excel input-decimal-separator="xxx">` within `<convert-output-xml-to-excel>` affects how numbers in the input HTML document are parsed.
+  * `dot` (default). Decimal separator is ".", thousand separator is ",".
+  * `comma`. Decimal separator is ",", thousand separator is ".".
+  * `magic`. Numbers may use either dot or comma as thousand or decimal separator, or the Swiss format 1'234.45. Heuristics are used to determine which system is in use. (This is useful in very broken input documents that use dot for some numbers and comma for others, within the same document.) The numbers must either have zero decimal (e.g. "1,024") or two decimal places (e.g. "12,34"). Any other number of decimal places in the input data will lead to wrong results. 
 * The number of decimal places in the `<td>` data are taken over the to Excel cell formatting. That is to say, `<td>12.20</td>` will produce an Excel number cell containing the value 12.2 with the Excel number format showing two decimal places, so will appear as 12.20 in the Excel file.
 * To force the cell to be an Excel text cell, even if the above algorithm would normally classify it as an Excel number cell, make the table cell with `<td excel-type="text">`.
 * The colspan attribute, e.g. `<td colspan="2">`, is respected. 
@@ -73,7 +74,5 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
   * `style="color: green"`, `style="color: red"`, `style="color: orange"` (Other colors are not supported.)
 * `<thead>`, `<tfoot>` and `<tbody>` are respected. (Elements in `<tfoot>` sections will appear at the bottom of the Excel file, no matter what order the tags come in in the HTML.) 
 * Column widths are determined by the lengths of text within each column. 
-* Any `<table>` which appears inside a `<td>` is ignored (i.e. tables may be nested in the HTML, only the outermost table is present in the resulting Excel file.) 
-* The contents of any `<script>` elements are ignored
-* The contents of any other tags such as `<span>` and `<div>` are included.
+* Any `<table>` which appears inside a `<td>` is ignored (i.e. for an HTML file with nested tables, only the outermost table is written to the Excel file.) 
 * Table rows which contain only table cells which contain no text are ignored. (Often such rows contain sub-tables, which themselves are ignored. Having empty rows doesn't look nice.) 
