@@ -54,7 +54,7 @@ public class ExcelGenerator extends DefaultHandler {
         },
         magic {
             public @CheckForNull Double tryParseNumber(@Nonnull String str) {
-                Matcher matcherDecimal = Pattern.compile("(-?[\\d,.']+)[,.](\\d{2})").matcher(str);
+                var matcherDecimal = Pattern.compile("(-?[\\d,.']+)[,.](\\d{2})").matcher(str);
                 if (matcherDecimal.matches()) {
                     try { 
                         return Double.valueOf(matcherDecimal.group(1).replaceAll("[,.']", "") 
@@ -63,7 +63,7 @@ public class ExcelGenerator extends DefaultHandler {
                     catch (NumberFormatException ignored) { }
                 }
 
-                Matcher matcherInteger = Pattern.compile("(-?[\\d,.']+)").matcher(str);
+                var matcherInteger = Pattern.compile("(-?[\\d,.']+)").matcher(str);
                 if (matcherInteger.matches()) {
                     try { 
                         return Double.valueOf(matcherInteger.group(1).replaceAll("[,.']", "")); 
@@ -170,7 +170,7 @@ public class ExcelGenerator extends DefaultHandler {
     }
 
     protected @Nonnull String getNumberFormat(int decimalPlaces) {
-        StringBuilder f = new StringBuilder("#,##0");
+        var f = new StringBuilder("#,##0");
         if (decimalPlaces > 0) {
             f.append(".");
             f.append("0".repeat(decimalPlaces));
@@ -189,10 +189,10 @@ public class ExcelGenerator extends DefaultHandler {
             int colIdx = 0;
             for (var cell : row) {
                 var cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
-                int columnWidthChars = 0;
+                var columnWidthChars = 0;
                 CellValue excelCell;
                 if (cellValue instanceof Double d) {
-                    int decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
+                    var decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
                     var cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
                     var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
                     excelCell = new Number(colIdx, nextRowInExcel, d, format);
@@ -243,9 +243,9 @@ public class ExcelGenerator extends DefaultHandler {
             case "td":
             case "th":
                 currentRow.add(currentCell = new CellFromHtml());
-                String colspan = attributes.getValue("colspan");
+                var colspan = attributes.getValue("colspan");
                 if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
-                String style = attributes.getValue("style");
+                var style = attributes.getValue("style");
                 if (style != null) {
                     currentCell.format.isCentered = style.matches(".*text-align:\\s*center.*");
                     currentCell.format.isBold = style.matches(".*font-weight:\\s*bold.*");

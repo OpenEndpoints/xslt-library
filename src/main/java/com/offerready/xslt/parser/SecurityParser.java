@@ -3,7 +3,6 @@ package com.offerready.xslt.parser;
 import com.databasesandlife.util.DomParser;
 import com.databasesandlife.util.Timer;
 import com.databasesandlife.util.gwtsafe.ConfigurationException;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.annotation.Nonnull;
@@ -29,7 +28,7 @@ public class SecurityParser extends DomParser {
             assertNoOtherElements(root, "secret-key");
             
             var result = new ArrayList<String>();
-            for (Element e : getSubElements(root, "secret-key")) result.add(e.getTextContent());
+            for (var e : getSubElements(root, "secret-key")) result.add(e.getTextContent());
             if (result.isEmpty()) throw new ConfigurationException("At least one <secret-key> must be present");
             return result.toArray(new String[0]);
         }

@@ -45,7 +45,7 @@ public class DocumentOutputDefinitionParser extends DomParser {
             xsltFileOrNull = new File(templateContainerDirectory, getMandatoryAttribute(xsltFileEl, "name"));
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
         } else if (xsltDirEl != null) {
-            File dir = new File(templateContainerDirectory, getMandatoryAttribute(xsltDirEl, "name"));
+            var dir = new File(templateContainerDirectory, getMandatoryAttribute(xsltDirEl, "name"));
             xsltFileOrNull = new File(dir, "report.xslt");
             if ( ! xsltFileOrNull.isFile()) throw new ConfigurationException("XSLT File '" + xsltFileOrNull + "' not found");
         } else xsltFileOrNull = null;

@@ -55,15 +55,15 @@ public class HtmlBodyExtractor {
         @Nonnull List<Range> ranges,
         @Nonnull String start, @CheckForNull String endOfStartOrNull, @Nonnull String end
     ) {
-        int startIdx = -1;
+        var startIdx = -1;
         var ourResult = new StringBuilder();
         while ((startIdx = input.indexOf(start, startIdx+1)) >= 0) {
-            int idxOfEndTag = input.indexOf(end, startIdx);
+            var idxOfEndTag = input.indexOf(end, startIdx);
             Range range = endOfStartOrNull == null 
                 ? new Range(startIdx, idxOfEndTag + end.length())
                 : new Range(input.indexOf(endOfStartOrNull, startIdx) + endOfStartOrNull.length(), idxOfEndTag);
-            boolean rangeOverlaps = false;
-            for (Range r : ranges) if (r.overlaps(range)) rangeOverlaps = true;
+            var rangeOverlaps = false;
+            for (var r : ranges) if (r.overlaps(range)) rangeOverlaps = true;
             if (rangeOverlaps) continue;
             ourResult.append(ignoreScripts(input.substring(range.startIncl, range.endExcl)));
             ranges.add(range);

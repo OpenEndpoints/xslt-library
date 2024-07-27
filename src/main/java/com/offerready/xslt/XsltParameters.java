@@ -34,9 +34,9 @@ public class XsltParameters implements Serializable {
         paramsForLanguage = new HashMap<>();
         paramsForLanguage.put("", new HashMap<>());
         for (var p : getSubElements(outputDefnElement, "placeholder-value")) {
-            String key = getMandatoryAttribute(p, "placeholder-name");
-            String value = getMandatoryAttribute(p, "value");
-            String language = getOptionalAttribute(p, "language", "");
+            var key = getMandatoryAttribute(p, "placeholder-name");
+            var value = getMandatoryAttribute(p, "value");
+            var language = getOptionalAttribute(p, "language", "");
             paramsForLanguage.putIfAbsent(language, new HashMap<>());
             paramsForLanguage.get(language).put(key, value);
         }

@@ -89,7 +89,7 @@ public class DocumentGenerator {
 
             var allResultDocumentTags = result.getElementsByTagNameNS(
                 "http://www.w3.org/1999/XSL/Transform", "result-document");
-            for (int i = 0; i < allResultDocumentTags.getLength(); i++) {
+            for (var i = 0; i < allResultDocumentTags.getLength(); i++) {
                 var a = allResultDocumentTags.item(i).getAttributes();
                 if (a.getNamedItem("href") != null) a.removeNamedItem("href");
             }

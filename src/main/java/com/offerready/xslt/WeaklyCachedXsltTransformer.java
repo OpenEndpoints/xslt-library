@@ -77,7 +77,7 @@ public class WeaklyCachedXsltTransformer {
         
         public void run() {
             var errorString = new StringBuilder();
-            ErrorListener errorListener = new ErrorListener() {
+            var errorListener = new ErrorListener() {
                 public void warning(TransformerException e) { errorString.append("\nERROR: ").append(e.getMessage()); }
                 public void error(TransformerException e) { errorString.append("\nWARN: ").append(e.getMessage()); }
                 public void fatalError(TransformerException e) { errorString.append("\nFATAL: ").append(e.getMessage()); }
@@ -119,7 +119,7 @@ public class WeaklyCachedXsltTransformer {
         var cacheKey = xslt.calculateCacheKey();
 
         var ref = cache.get(cacheKey);
-        WeaklyCachedXsltTransformer result = (ref == null) ? null : ref.get();
+        var result = (ref == null) ? null : ref.get();
         if (result != null) return result;
         
         result = threads.toCompileForXsltMd5.get(cacheKey);
