@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Boolean.parseBoolean;
+
 public class ExcelGenerator extends DefaultHandler {
 
     @SuppressWarnings("unused") // referenced via valueOf(..) from config file parser
@@ -242,6 +244,8 @@ public class ExcelGenerator extends DefaultHandler {
                 break;
             case "td":
             case "th":
+            case "excel-td":
+                if (parseBoolean(attributes.getValue("excel-ignore"))) break;
                 currentRow.add(currentCell = new CellFromHtml());
                 var colspan = attributes.getValue("colspan");
                 if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
@@ -289,6 +293,7 @@ public class ExcelGenerator extends DefaultHandler {
                 break;
             case "td":
             case "th":
+            case "excel-td":
                 currentCell = null;
                 break;
         }

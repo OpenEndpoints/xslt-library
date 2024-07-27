@@ -76,3 +76,4 @@ If the `<convert-output-xml-to-excel>` is used, as specified above, then HTML is
 * Column widths are determined by the lengths of text within each column. 
 * Any `<table>` which appears inside a `<td>` is ignored (i.e. for an HTML file with nested tables, only the outermost table is written to the Excel file.) 
 * Table rows which contain only table cells which contain no text are ignored. (Often such rows contain sub-tables, which themselves are ignored. Having empty rows doesn't look nice.) 
+* It is also possible to ignore `<td>` elements using the `<td excel-ignore="true">` attribute. And add additional output table cells by wrapping elements in `<excel-td>`, which will be ignored by the browser. In this way it's possible to e.g. split up a single browser `<td>` into multiple Excel cells, by ignoring the `<td>` and wrapping each piece of text should should be in Excel cells in `<excel-td>`.
