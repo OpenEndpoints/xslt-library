@@ -226,27 +226,39 @@ public class ExcelGenerator extends DefaultHandler {
             }
         }
         if (tableDepth != 1) return;
-        if ("script".equals(qName)) inScript = true;
-        if ("thead".equals(qName)) currentMatrix = currentHeadMatrix;
-        if ("tfoot".equals(qName)) currentMatrix = currentFootMatrix;
-        if ("tr".equals(qName)) currentMatrix.add(currentRow = new ArrayList<>());
-        if ("td".equals(qName) || "th".equals(qName)) {
-            currentRow.add(currentCell = new CellFromHtml());
-            String colspan = attributes.getValue("colspan");
-            if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
-            String style = attributes.getValue("style");
-            if (style != null) {
-                currentCell.format.isCentered = style.matches(".*text-align:\\s*center.*");
-                currentCell.format.isBold = style.matches(".*font-weight:\\s*bold.*");
-                currentCell.format.hasTopBorder = style.contains("border-top:");
 
-                Matcher colorMatcher = Pattern.compile("color:\\s*(\\w+)").matcher(style);
-                if (colorMatcher.find()) {
-                    try { currentCell.format.color = Color.valueOf(colorMatcher.group(1)); }
-                    catch (IllegalArgumentException ignored) { } // if user writes "color:purple", just ignore it
+        switch (qName) {
+            case "script":
+                inScript = true;
+                break;
+            case "thead":
+                currentMatrix = currentHeadMatrix;
+                break;
+            case "tfoot":
+                currentMatrix = currentFootMatrix;
+                break;
+            case "tr":
+                currentMatrix.add(currentRow = new ArrayList<>());
+                break;
+            case "td":
+            case "th":
+                currentRow.add(currentCell = new CellFromHtml());
+                String colspan = attributes.getValue("colspan");
+                if (colspan != null) currentCell.colspan = Integer.parseInt(colspan);
+                String style = attributes.getValue("style");
+                if (style != null) {
+                    currentCell.format.isCentered = style.matches(".*text-align:\\s*center.*");
+                    currentCell.format.isBold = style.matches(".*font-weight:\\s*bold.*");
+                    currentCell.format.hasTopBorder = style.contains("border-top:");
+
+                    Matcher colorMatcher = Pattern.compile("color:\\s*(\\w+)").matcher(style);
+                    if (colorMatcher.find()) {
+                        try { currentCell.format.color = Color.valueOf(colorMatcher.group(1)); }
+                        catch (IllegalArgumentException ignored) { } // if user writes "color:purple", just ignore it
+                    }
                 }
-            }
-            if ("text".equals(attributes.getValue("excel-type"))) currentCell.forceText = true;
+                if ("text".equals(attributes.getValue("excel-type"))) currentCell.forceText = true;
+                break;
         }
     }
   
@@ -260,16 +272,26 @@ public class ExcelGenerator extends DefaultHandler {
             tableDepth--;
         }
         if (tableDepth != 1) return;
-        if ("script".equals(qName)) inScript = false;
-        if ("thead".equals(qName)) currentMatrix = currentBodyMatrix;
-        if ("tfoot".equals(qName)) currentMatrix = currentBodyMatrix;
-        if ("tr".equals(qName)) {
-            boolean isEmpty = true;
-            for (CellFromHtml cell : currentRow) if (cell.string.length() > 0) isEmpty = false;
-            if (isEmpty) currentMatrix.remove(currentMatrix.size()-1);
-            currentRow = null;
+
+        switch (qName) {
+            case "script":
+                inScript = false;
+                break;
+            case "thead":
+            case "tfoot":
+                currentMatrix = currentBodyMatrix;
+                break;
+            case "tr":
+                boolean isEmpty = true;
+                for (CellFromHtml cell : currentRow) if (cell.string.length() > 0) isEmpty = false;
+                if (isEmpty) currentMatrix.remove(currentMatrix.size()-1);
+                currentRow = null;
+                break;
+            case "td":
+            case "th":
+                currentCell = null;
+                break;
         }
-        if ("td".equals(qName) || "th".equals(qName)) currentCell = null;
     }
 
     @Override public void characters(char[] ch, int start, int length) throws SAXException {

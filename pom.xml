@@ -4,7 +4,7 @@
 
     <groupId>com.offerready</groupId>
     <artifactId>xslt-library</artifactId>
-    <version>9.0.3</version>
+    <version>9.0.4</version>
     <name>Offer-Ready XSLT Library</name>
     <description>Utility classes for XSLT processing used at Offer-Ready GmbH</description>
     <url>https://github.com/offer-ready/xslt-library</url>
