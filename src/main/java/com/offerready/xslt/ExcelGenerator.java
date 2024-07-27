@@ -1,7 +1,6 @@
 package com.offerready.xslt;
 
 import com.databasesandlife.util.Timer;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -10,7 +9,6 @@ import jxl.format.Colour;
 import jxl.write.Number;
 import jxl.write.*;
 import jxl.write.biff.CellValue;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.xml.sax.Attributes;
@@ -106,12 +104,10 @@ public class ExcelGenerator extends DefaultHandler {
         public @CheckForNull Color color = null;
     }
 
-    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE") // @EqualsAndHashCode checks format for being null
-    @EqualsAndHashCode @AllArgsConstructor
-    protected static class CellAndNumberFormat {
-        public final @Nonnull CellFormat format;
-        public final @CheckForNull String numberFormat;
-
+    protected record CellAndNumberFormat(
+        @Nonnull CellFormat format,
+        @CheckForNull String numberFormat
+    ) {
         @SneakyThrows(WriteException.class)
         public @Nonnull WritableCellFormat newFormat() {
             final WritableCellFormat result;
@@ -195,17 +191,17 @@ public class ExcelGenerator extends DefaultHandler {
                 var cellValue = cell.forceText ? cell.string.toString() : parseString(cell.string.toString());
                 int columnWidthChars = 0;
                 CellValue excelCell;
-                if (cellValue instanceof Double) {
+                if (cellValue instanceof Double d) {
                     int decimalPlaces = inputDecimalSeparator.determineDecimalPlaces(cell.string.toString());
                     var cellAndNumberFormat = new CellAndNumberFormat(cell.format, getNumberFormat(decimalPlaces));
                     var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
-                    excelCell = new Number(colIdx, nextRowInExcel, (Double) cellValue, format);
-                    columnWidthChars = String.format("%."+decimalPlaces+"f", cellValue).length();
-                } else if (cellValue instanceof String) {
+                    excelCell = new Number(colIdx, nextRowInExcel, d, format);
+                    columnWidthChars = String.format("%."+decimalPlaces+"f", d).length();
+                } else if (cellValue instanceof String s) {
                     var cellAndNumberFormat = new CellAndNumberFormat(cell.format, null);
                     var format = formats.computeIfAbsent(cellAndNumberFormat, CellAndNumberFormat::newFormat);
-                    excelCell = new Label(colIdx, nextRowInExcel, (String) cellValue, format);
-                    columnWidthChars = ((String) cellValue).length();
+                    excelCell = new Label(colIdx, nextRowInExcel, s, format);
+                    columnWidthChars = s.length();
                 } else {
                     throw new RuntimeException("Unreachable: " + cellValue.getClass());
                 }

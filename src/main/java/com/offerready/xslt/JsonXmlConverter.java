@@ -47,13 +47,13 @@ public class JsonXmlConverter {
      * The default JSON-to-XML converter simply converts JSON object keys to XML element names verbatim.
      */
     protected @Nonnull Object makeKeysInJsonSafeForXml(@Nonnull Object input) {
-        if (input instanceof JSONObject) 
-            return new JSONObject(((JSONObject) input).keySet().stream().collect(toMap(
+        if (input instanceof JSONObject o)
+            return new JSONObject(o.keySet().stream().collect(toMap(
                 key -> makeKeySafeForXml(patternNonFirstChar, makeKeySafeForXml(patternFirstChar, key)),
-                key -> makeKeysInJsonSafeForXml(((JSONObject) input).opt(key))
+                key -> makeKeysInJsonSafeForXml(o.opt(key))
             )));
-        else if (input instanceof JSONArray) 
-            return new JSONArray(StreamSupport.stream(((JSONArray) input).spliterator(), false)
+        else if (input instanceof JSONArray a)
+            return new JSONArray(StreamSupport.stream(a.spliterator(), false)
                 .map(e -> makeKeysInJsonSafeForXml(e))
                 .toList());
         else return input;
